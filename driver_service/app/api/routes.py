@@ -9,7 +9,8 @@ from app.services.driver_service import (
     get_driver,
     list_drivers,
     update_driver_data,
-    deactivate_driver
+    deactivate_driver,
+    assign_route
 )
 
 router = APIRouter()
@@ -47,3 +48,11 @@ def remove_driver(driver_id: str):
     if not success:
         raise HTTPException(status_code=404, detail="Driver not found")
     return {"message": "Driver deactivated"}
+
+@router.patch("/{driver_id}/assign-route", status_code=200)
+def assign_route_to_driver(driver_id: str, route_id: str):
+    success = assign_route(driver_id, route_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Driver not found")
+    return {"message": f"Route {route_id} assigned to driver {driver_id}"}
+

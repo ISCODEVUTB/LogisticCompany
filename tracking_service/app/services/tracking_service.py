@@ -1,45 +1,18 @@
-import json
-import os
-from typing import List
-from app.models.tracking_model import TrackingEvent
+from app.models.tracking import TrackingEvent
+from app.schemas.tracking_schemas import TrackingEventCreate, TrackingHistoryOut, TrackingEventOut
+from app.repository.tracking_repo import save_tracking_event, get_tracking_events_by_code
 
-DATA_FILE = "app/data/tracking.json"
-
-
-def _load_data() -> List[dict]:
-    if not os.path.exists(DATA_FILE):
-        return []
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-
-def _save_data(data: List[dict]):
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4, default=str)  # default=str para datetime
-
-
-def save_tracking_event(event: TrackingEvent):
-    data = _load_data()
-    data.append({
-        "tracking_code": event.tracking_code,
-        "status": event.status,
-        "timestamp": event.timestamp.isoformat()
-    })
-    _save_data(data)
-
-
-def get_tracking_events_by_code(tracking_code: str) -> List[TrackingEvent]:
-    data = _load_data()
-    return [
-        TrackingEvent(
-            tracking_code=entry["tracking_code"],
-            status=entry["status"],
-            timestamp=datetime.fromisoformat(entry["timestamp"])
+class TrackingService:
+    def add_tracking_event(self, data: TrackingEventCreate):
+        event = TrackingEvent(
+            tracking_code=data.tracking_code,
+            status=data.status,
+            timestamp=data.timestamp
         )
-        for entry in data
-        if entry["tracking_code"] == tracking_code
-    ]
+        save_tracking_event(event)
+        return {"message": "Tracking event recorded"}
 
-
-# Asegúrate de importar datetime
-from datetime import datetime
+    def get_history(self, tracking_code: str) -> TrackingHistoryOut:
+        events = get_tracking_events_by_code(tracking_code)
+        history = [TrackingEventOut(**e.__dict__) for e in events]
+        return TrackingHistoryOut(tracking_code=tracking_code, history=history)

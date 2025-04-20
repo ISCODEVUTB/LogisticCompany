@@ -59,3 +59,19 @@ def update_driver_data(driver_id: str, dto: DriverUpdateDTO) -> bool:
 
 def deactivate_driver(driver_id: str) -> bool:
     return delete_driver(driver_id)
+
+def assign_route(driver_id: str, route_id: str) -> bool:
+    driver = get_driver_by_id(driver_id)
+    if not driver:
+        return False
+
+    if "assigned_routes" not in driver.__dict__:
+        driver.assigned_routes = []
+
+    if route_id not in driver.assigned_routes:
+        driver.assigned_routes.append(route_id)
+        driver.updated_at = datetime.utcnow()
+        save_driver(driver)
+
+    return True
+

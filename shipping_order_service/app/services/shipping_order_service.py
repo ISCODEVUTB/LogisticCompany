@@ -13,13 +13,10 @@ from app.repository.shipping_order_repo import (
     update_order_status,
     cancel_order
 )
+from app.services.tracking_service_client import send_tracking_event
 
 
-def generate_tracking_code() -> str:
-    return f"TRK-{uuid.uuid4().hex[:10].upper()}"
-
-
-def create_shipping_order(dto: ShippingOrderCreateDTO) -> ShippingOrderResponseDTO:
+async def create_shipping_order(dto: ShippingOrderCreateDTO) -> ShippingOrderResponseDTO:
     order_id = str(uuid.uuid4())
     tracking_code = generate_tracking_code()
 
@@ -34,6 +31,9 @@ def create_shipping_order(dto: ShippingOrderCreateDTO) -> ShippingOrderResponseD
     )
 
     save_order(order)
+
+    # Registrar evento en el tracking_service
+    await send_tracking_event(order.tracking_code, "created", order.created_at)
 
     return ShippingOrderResponseDTO(
         order_id=order.order_id,
@@ -75,3 +75,7 @@ def track_shipping_order(tracking_code: str) -> ShippingOrderResponseDTO | None:
         status=order.status,
         created_at=order.created_at
     )
+
+
+def generate_tracking_code() -> str:
+    return f"TRK-{uuid.uuid4().hex[:10].upper()}"

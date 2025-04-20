@@ -1,0 +1,14 @@
+{
+    "9efd51c2-c415-4f70-a22b-ec430adf1d0f": {
+        "driver_id": "9efd51c2-c415-4f70-a22b-ec430adf1d0f",
+        "name": "Carlos Pérez",
+        "license_id": "L-123456",
+        "phone": "3200001111",
+        "status": "available",
+        "created_at": "2025-04-19T22:24:22.183787",
+        "updated_at": "2025-04-19T22:37:14.206484",
+        "assigned_routes": [
+            "f844f882-5a36-48c9-bd81-12dc6a28a8ac"
+        ]
+    }
+}

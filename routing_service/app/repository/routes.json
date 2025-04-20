@@ -1,0 +1,30 @@
+{
+    "acc65d4c-c8ad-4563-86db-c5d7499c8d8c": {
+        "id": "acc65d4c-c8ad-4563-86db-c5d7499c8d8c",
+        "origin": "Centro Logístico",
+        "destination": "Sucursal Sur",
+        "estimated_time": 60,
+        "distance_km": 24.7,
+        "driver_id": "9efd51c2-c415-4f70-a22b-ec430adf1d0f",
+        "order_ids": [
+            "15fead79-fb70-462c-ad74-7c954ea7d243",
+            "93d28353-a59b-46d6-8fab-ccec861b9666"
+        ],
+        "created_at": "2025-04-19T22:30:17.480685",
+        "status": "in_progress"
+    },
+    "f844f882-5a36-48c9-bd81-12dc6a28a8ac": {
+        "id": "f844f882-5a36-48c9-bd81-12dc6a28a8ac",
+        "origin": "Centro Logístico",
+        "destination": "Sucursal Sur",
+        "estimated_time": 60,
+        "distance_km": 24.7,
+        "driver_id": "9efd51c2-c415-4f70-a22b-ec430adf1d0f",
+        "order_ids": [
+            "15fead79-fb70-462c-ad74-7c954ea7d243",
+            "93d28353-a59b-46d6-8fab-ccec861b9666"
+        ],
+        "created_at": "2025-04-19T22:37:13.406042",
+        "status": "in_progress"
+    }
+}
