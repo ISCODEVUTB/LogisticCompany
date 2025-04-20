@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.services.tracking_service import TrackingService
-from app.schemas.tracking_schema import TrackingEventCreate
+from app.schemas.tracking_schemas import TrackingEventCreate
 
 router = APIRouter()
 service = TrackingService()

@@ -14,38 +14,38 @@ from app.services.shipping_order_service import (
 router = APIRouter()
 
 
-@router.post("/", response_model=ShippingOrderResponseDTO, status_code=201)
-def create_order(order_data: ShippingOrderCreateDTO):
-    return create_shipping_order(order_data)
+@router.post("/orders", response_model=ShippingOrderResponseDTO, status_code=201)
+async def create_order(dto: ShippingOrderCreateDTO):
+    return await create_shipping_order(dto)
 
 
-@router.get("/{order_id}", response_model=ShippingOrderResponseDTO)
+@router.get("/orders/{order_id}", response_model=ShippingOrderResponseDTO)
 def get_order(order_id: str):
     order = get_shipping_order_by_id(order_id)
-    if order is None:
+    if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     return order
 
 
-@router.delete("/{order_id}", status_code=200)
+@router.post("/orders/{order_id}/cancel", status_code=204)
 def cancel_order(order_id: str):
-    result = cancel_shipping_order(order_id)
-    if not result:
-        raise HTTPException(status_code=400, detail="Unable to cancel order")
-    return {"message": "Order cancelled successfully"}
+    success = cancel_shipping_order(order_id)
+    if not success:
+        raise HTTPException(status_code=400, detail="Unable to cancel the order")
+    return
 
 
-@router.patch("/{order_id}/status", status_code=200)
-def update_order_status(order_id: str, status: str):
-    result = update_shipping_order_status(order_id, status)
-    if not result:
+@router.post("/orders/{order_id}/status", status_code=204)
+async def update_status(order_id: str, status: str):
+    success = await update_shipping_order_status(order_id, status)
+    if not success:
         raise HTTPException(status_code=400, detail="Unable to update order status")
-    return {"message": f"Order status updated to '{status}'"}
+    return
 
 
-@router.get("/track/{tracking_code}", response_model=ShippingOrderResponseDTO)
+@router.get("/orders/track/{tracking_code}", response_model=ShippingOrderResponseDTO)
 def track_order(tracking_code: str):
     order = track_shipping_order(tracking_code)
-    if order is None:
-        raise HTTPException(status_code=404, detail="Order not found")
+    if not order:
+        raise HTTPException(status_code=404, detail="Tracking code not found")
     return order

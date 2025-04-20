@@ -1,9 +1,9 @@
 import json
 import os
 from typing import List
-from app.models.tracking_model import TrackingEvent
+from app.models.tracking import TrackingEvent
 
-DATA_FILE = "app/data/tracking.json"
+DATA_FILE = "app/repository/tracking.json"
 
 
 def _load_data() -> List[dict]:

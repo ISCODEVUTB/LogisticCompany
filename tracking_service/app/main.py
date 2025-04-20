@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api.routes import tracking_router
+from app.api.routes import router as tracking_router
 
 app = FastAPI(
     title="Tracking Microservice",
@@ -7,5 +7,4 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Register the tracking router with prefix
-app.include_router(tracking_router.router, prefix="/tracking", tags=["Tracking"])
+app.include_router(tracking_router, prefix="/tracking", tags=["Tracking"])
