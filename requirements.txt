@@ -1,0 +1,23 @@
+# Framework web
+fastapi
+
+# ASGI server
+uvicorn
+
+# Validación de datos
+pydantic
+
+# Carga de variables de entorno
+python-dotenv
+
+# JWT (autenticación)
+python-jose
+
+# Pruebas
+pytest
+
+# Linter PEP8
+flake8
+
+# Logging estructurado (opcional)
+loguru
