@@ -11,20 +11,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        echo "FastAPI environment is ready"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
 
-    - name: Placeholder for future tests
-      run: |
-        echo "ℹNo tests implemented yet. You can add pytest or unit tests here later."
+      - name: Run tests
+        run: |
+          pytest --maxfail=1 --disable-warnings -q
+
+      - name: Lint code (PEP8)
+        run: |
+          pip install flake8
+          flake8 . --count --exit-zero --max-line-length=88 --statistics
