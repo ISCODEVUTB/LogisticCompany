@@ -2,6 +2,7 @@ import json
 import os
 from typing import List
 from app.models.tracking import TrackingEvent
+from datetime import datetime
 
 DATA_FILE = "app/repository/tracking.json"
 
@@ -40,7 +41,4 @@ def get_tracking_events_by_code(tracking_code: str) -> List[TrackingEvent]:
         if entry["tracking_code"] == tracking_code
     ]
 
-
-# Asegúrate de importar datetime
-from datetime import datetime
 

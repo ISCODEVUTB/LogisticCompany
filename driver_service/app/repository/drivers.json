@@ -10,5 +10,50 @@
         "assigned_routes": [
             "f844f882-5a36-48c9-bd81-12dc6a28a8ac"
         ]
+    },
+    "5739fce8-c737-4881-b620-94a4a865f683": {
+        "driver_id": "5739fce8-c737-4881-b620-94a4a865f683",
+        "name": "Juan Pérez",
+        "license_id": "LIC12345",
+        "phone": "3124567890",
+        "status": "available",
+        "created_at": "2025-04-28T16:51:12.278124",
+        "updated_at": "2025-04-28T16:51:12.278131"
+    },
+    "ee28328c-a2a3-47df-92cd-a020a208ffbd": {
+        "driver_id": "ee28328c-a2a3-47df-92cd-a020a208ffbd",
+        "name": "Juan Pérez",
+        "license_id": "LIC12345",
+        "phone": "3124567890",
+        "status": "available",
+        "created_at": "2025-04-28T16:51:26.732808",
+        "updated_at": "2025-04-28T16:51:26.732817"
+    },
+    "de019b2d-9d0d-4fa2-b865-f3e6ce4150aa": {
+        "driver_id": "de019b2d-9d0d-4fa2-b865-f3e6ce4150aa",
+        "name": "Juan Pérez",
+        "license_id": "LIC12345",
+        "phone": "3124567890",
+        "status": "available",
+        "created_at": "2025-04-28T16:52:49.955595",
+        "updated_at": "2025-04-28T16:52:49.955602"
+    },
+    "f4d20b15-6f16-4b01-8d8a-879f559e5608": {
+        "driver_id": "f4d20b15-6f16-4b01-8d8a-879f559e5608",
+        "name": "Juan Pérez",
+        "license_id": "LIC12345",
+        "phone": "3124567890",
+        "status": "available",
+        "created_at": "2025-04-28T16:52:58.210374",
+        "updated_at": "2025-04-28T16:52:58.210384"
+    },
+    "55db1452-37b6-4d0e-8a57-954d5a32d256": {
+        "driver_id": "55db1452-37b6-4d0e-8a57-954d5a32d256",
+        "name": "Juan Pérez",
+        "license_id": "LIC12345",
+        "phone": "3124567890",
+        "status": "available",
+        "created_at": "2025-05-01T21:18:53.259527",
+        "updated_at": "2025-05-01T21:18:53.259536"
     }
 }
