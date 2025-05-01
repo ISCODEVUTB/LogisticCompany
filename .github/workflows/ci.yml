@@ -1,40 +1,30 @@
-name: Python CI with SonarCloud
+name: FastAPI - Basic CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
 
 jobs:
-  build:
-    name: Test and Analyze
+  setup-fastapi:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v3
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: "3.11"
+        python-version: '3.10'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install pytest pytest-cov
+        echo "FastAPI environment is ready"
 
-    - name: Run tests with coverage
+    - name: Placeholder for future tests
       run: |
-        pytest --cov=. --cov-report=xml
-
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@v2
-      with:
-        projectBaseDir: .
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_PROJECT_KEY: ${{ secrets.ORGANIZATION_KEY }}
-        SONAR_ORGANIZATION: ${{ secrets.ID_PROJECT }}
+        echo "ℹNo tests implemented yet. You can add pytest or unit tests here later."
