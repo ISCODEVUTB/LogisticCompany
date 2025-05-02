@@ -1,4 +1,3 @@
-
 name: Python CI with SonarCloud
 
 on:
@@ -38,4 +37,5 @@ jobs:
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_PROJECT_KEY: ${{ secrets.ORGANIZATION_KEY }}
+        SONAR_ORGANIZATION: ${{ secrets.ID_PROJECT }}
         SONAR_ORGANIZATION: ${{ secrets.ID_PROJECT }}
