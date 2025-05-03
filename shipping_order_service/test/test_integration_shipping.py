@@ -4,7 +4,7 @@ from app.main import app
 
 @pytest.mark.asyncio
 async def test_create_shipping_order_integration():
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(app=app, base_url="https://test") as client:
         payload = {
             "sender": {
                 "name": "Juan Pérez",
