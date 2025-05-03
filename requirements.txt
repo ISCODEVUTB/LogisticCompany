@@ -1,27 +1,14 @@
-# Framework web
-fastapi==0.95.2
-
-# Servidor ASGI + opción Gunicorn
-uvicorn[gunicorn]==0.22.0
-
-# ORM y Base de Datos (aunque aún no uses DBs reales)
-sqlalchemy==2.0.19
-databases==0.7.2
-
-# Validación de datos
-pydantic==1.10.6
-
-# Pruebas unitarias
+fastapi
+uvicorn
+httpx
+pydantic
 pytest
-
-# Linter de código PEP8
+pytest-asyncio
+coverage
+requests
+python-multipart
+aiofiles
+mypy
+black
+isort
 flake8
-
-# Variables de entorno (.env)
-python-dotenv
-
-# Autenticación con JWT
-python-jose
-
-# Logging estructurado (opcional pero recomendado)
-loguru
