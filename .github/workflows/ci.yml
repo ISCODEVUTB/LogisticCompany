@@ -28,6 +28,7 @@ jobs:
 
     - name: Run tests with coverage
       run: |
+        export PYTHONPATH=$PYTHONPATH:./shipping_order_service:./driver_service:./routing_service:./tracking_service
         pytest --cov=. --cov-report=xml
 
     - name: SonarCloud Scan
