@@ -1,7 +1,7 @@
 @pytest.mark.asyncio
 async def test_update_shipping_order_status():
     transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    async with AsyncClient(transport=transport, base_url="https://test") as client:
         # Crear orden
         payload = {
             "sender": {"name": "Carlos Méndez", "address": "Diagonal 99", "phone": "3023334444"},
