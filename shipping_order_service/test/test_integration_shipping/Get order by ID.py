@@ -5,7 +5,7 @@ from app.main import app
 @pytest.mark.asyncio
 async def test_get_shipping_order_by_id():
     transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    async with AsyncClient(transport=transport, base_url="https://test") as client:
         # Crear orden
         payload = {
             "sender": {"name": "Juan Pérez", "address": "Calle 123", "phone": "3123456789"},
