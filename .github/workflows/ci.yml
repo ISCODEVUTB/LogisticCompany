@@ -29,7 +29,13 @@ jobs:
     - name: Run tests with coverage
       run: |
         export PYTHONPATH=$PYTHONPATH:./shipping_order_service:./driver_service:./routing_service:./tracking_service
-        pytest --cov=. --cov-report=xml:coverage.xml --cov-report=term
+        pytest \
+          --cov=shipping_order_service \
+          --cov=driver_service \
+          --cov=routing_service \
+          --cov=tracking_service \
+          --cov-report=xml:coverage.xml \
+          --cov-report=term
 
     - name: Check coverage file
       run: ls -l coverage.xml
@@ -40,5 +46,5 @@ jobs:
         projectBaseDir: .
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_PROJECT_KEY: ${{ secrets.ORGANIZATION_KEY }}
-        SONAR_ORGANIZATION: ${{ secrets.ID_PROJECT }}
+        SONAR_PROJECT_KEY: ${{ secrets.ID_PROJECT }}
+        SONAR_ORGANIZATION: ${{ secrets.ORGANIZATION_KEY }}
