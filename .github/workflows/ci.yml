@@ -29,7 +29,10 @@ jobs:
     - name: Run tests with coverage
       run: |
         export PYTHONPATH=$PYTHONPATH:./shipping_order_service:./driver_service:./routing_service:./tracking_service
-        pytest --cov=. --cov-report=xml
+        pytest --cov=. --cov-report=xml:coverage.xml --cov-report=term
+
+    - name: Check coverage file
+      run: ls -l coverage.xml
 
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@v2
@@ -39,4 +42,3 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_PROJECT_KEY: ${{ secrets.ORGANIZATION_KEY }}
         SONAR_ORGANIZATION: ${{ secrets.ID_PROJECT }}
-
