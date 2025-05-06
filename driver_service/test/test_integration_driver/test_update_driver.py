@@ -5,7 +5,7 @@ from app.main import app
 @pytest.mark.asyncio
 async def test_update_driver_success():
     transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    async with AsyncClient(transport=transport, base_url="https://test") as client:
         # Crear conductor primero
         payload = {
             "name": "Laura Gómez",
