@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from app.models.driver import Driver
 from app.schemas.driver_schema import (
     DriverCreateDTO,
@@ -70,7 +70,7 @@ def assign_route(driver_id: str, route_id: str) -> bool:
 
     if route_id not in driver.assigned_routes:
         driver.assigned_routes.append(route_id)
-        driver.updated_at = datetime.utcnow()
+        driver.updated_at = datetime.fromtimestamp(timestamp, timezone.utc)
         save_driver(driver)
 
     return True
