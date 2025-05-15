@@ -32,7 +32,7 @@ def cancel_order(order_id: str):
     success = cancel_shipping_order(order_id)
     if not success:
         raise HTTPException(status_code=400, detail="Unable to cancel the order")
-    return
+    
 
 
 @router.post("/orders/{order_id}/status", status_code=204)
@@ -40,7 +40,7 @@ async def update_status(order_id: str, status: str):
     success = await update_shipping_order_status(order_id, status)
     if not success:
         raise HTTPException(status_code=400, detail="Unable to update order status")
-    return
+    
 
 
 @router.get("/orders/track/{tracking_code}", response_model=ShippingOrderResponseDTO)
