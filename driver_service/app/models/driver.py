@@ -1,5 +1,4 @@
-from datetime import datetime
-
+from datetime import datetime, timezone
 
 class Driver:
     def __init__(
@@ -17,5 +16,5 @@ class Driver:
         self.license_id = license_id
         self.phone = phone
         self.status = status
-        self.created_at = created_at or datetime.utcnow()
-        self.updated_at = updated_at or datetime.utcnow()
+        self.created_at = created_at or datetime.now(timezone.utc)
+        self.updated_at = updated_at or datetime.now(timezone.utc)
