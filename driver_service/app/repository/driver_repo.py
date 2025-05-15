@@ -51,7 +51,7 @@ def update_driver(driver_id: str, updates: dict) -> bool:
         return False
 
     driver.update(updates)
-    driver["updated_at"] = datetime.fromtimestamp(timestamp, timezone.utc).isoformat()
+    driver["updated_at"] = datetime.now(timezone.utc).isoformat()
     save_drivers(drivers)
     return True
 
@@ -60,7 +60,7 @@ def delete_driver(driver_id: str) -> bool:
     drivers = load_drivers()
     if driver_id in drivers:
         drivers[driver_id]["status"] = "inactive"
-        drivers[driver_id]["updated_at"] = datetime.fromtimestamp(timestamp, timezone.utc).isoformat()
+        drivers[driver_id]["updated_at"] = datetime.now(timezone.utc).isoformat()
         save_drivers(drivers)
         return True
     return False
