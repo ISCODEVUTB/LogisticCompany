@@ -27,11 +27,7 @@ def register_driver(dto: DriverCreateDTO):
 def get_driver_by_id(driver_id: str):
     driver = get_driver(driver_id)
     if not driver:
-        raise HTTPException(
-            status_code=404, 
-            detail=DRIVER_NOT_FOUND, 
-            headers={"X-Error": "Driver not found"}
-        )
+        raise HTTPException(status_code=404, detail=DRIVER_NOT_FOUND)
     return driver
 
 
