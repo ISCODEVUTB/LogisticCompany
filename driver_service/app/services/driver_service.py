@@ -65,12 +65,12 @@ def assign_route(driver_id: str, route_id: str) -> bool:
     if not driver:
         return False
 
-    if "assigned_routes" not in driver.__dict__:
+    if not hasattr(driver, 'assigned_routes'):
         driver.assigned_routes = []
-
+    
     if route_id not in driver.assigned_routes:
         driver.assigned_routes.append(route_id)
-        driver.updated_at = datetime.fromtimestamp(timestamp, timezone.utc)
+        driver.updated_at = datetime.now(timezone.utc)
         save_driver(driver)
 
     return True
