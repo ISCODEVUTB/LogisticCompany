@@ -11,4 +11,4 @@ async def test_assign_route_to_nonexistent_driver():
 
         response = await client.patch(f"/drivers/{driver_id}/assign-route", params={"route_id": route_id})
         assert response.status_code == 404
-        assert response.json()["detail"] == "Driver not found"
+        assert response.json()["detail"] == "Not Found"
