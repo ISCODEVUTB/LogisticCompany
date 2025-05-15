@@ -10,4 +10,4 @@ async def test_deactivate_nonexistent_driver():
 
         response = await client.delete(f"/drivers/{driver_id}")
         assert response.status_code == 404
-        assert response.json()["detail"] == "Not found"
+        assert response.json()["detail"] == "Not Found"
