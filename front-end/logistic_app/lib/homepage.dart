@@ -1,121 +1,73 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class DashboardScreen extends StatelessWidget {
-  final String adminUser = "Admin";
+class Homepage extends StatefulWidget {
+  const Homepage({Key? key}) : super(key: key);
+
+  @override
+  State<Homepage> createState() => _HomepageState();
+}
+
+class _HomepageState extends State<Homepage> {
+  Map<String, dynamic> data = {
+    'totalOrders': '...',
+    'activeDrivers': '...',
+    'activeRoutes': '...',
+    'trackingEvents': '...',
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData(); // Llama a los microservicios
+  }
+
+  Future<void> fetchData() async {
+    try {
+      // Simulaciones (reemplazar por tu IP/localhost)
+      final orderRes = await http.get(Uri.parse('http://localhost:8002/orders'));
+      final driverRes = await http.get(Uri.parse('http://localhost:8001/drivers'));
+      final routeRes = await http.get(Uri.parse('http://localhost:8004/routes/active'));
+      final trackRes = await http.get(Uri.parse('http://localhost:8003/track/TRK12345678')); // uno específico
+
+      setState(() {
+        data['totalOrders'] = jsonDecode(orderRes.body).length.toString();
+        data['activeDrivers'] = jsonDecode(driverRes.body).length.toString();
+        data['activeRoutes'] = jsonDecode(routeRes.body).length.toString();
+        data['trackingEvents'] = jsonDecode(trackRes.body)['history']?.length.toString() ?? '0';
+      });
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+  Widget buildCard(String title, String value, IconData icon, Color color) {
+    return Card(
+      elevation: 4,
+      child: ListTile(
+        leading: Icon(icon, size: 36, color: color),
+        title: Text(title),
+        subtitle: Text(value, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Panel de Gestión Logística'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(child: Text("Usuario: $adminUser")),
-          )
-        ],
+        title: const Text('Panel de Administración - Admin'),
+        backgroundColor: Colors.black87,
       ),
-      body: Row(
-        children: [
-          NavigationPanel(),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                children: [
-                  InfoCard(
-                    title: "Pedidos Activos",
-                    content: "Total: 25\nEn tránsito: 10",
-                    icon: Icons.local_shipping,
-                  ),
-                  InfoCard(
-                    title: "Conductores Disponibles",
-                    content: "Disponibles: 8\nAsignados: 5",
-                    icon: Icons.person,
-                  ),
-                  InfoCard(
-                    title: "Rutas en Curso",
-                    content: "Rutas Activas: 4",
-                    icon: Icons.route,
-                  ),
-                  InfoCard(
-                    title: "Eventos de Tracking",
-                    content: "Últimos eventos registrados: 13",
-                    icon: Icons.location_on,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class NavigationPanel extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 220,
-      color: Colors.grey.shade200,
-      child: ListView(
-        children: [
-          DrawerHeader(
-            child: Text(
-              'Menú',
-              style: TextStyle(fontSize: 24),
-            ),
-          ),
-          ListTile(
-            leading: Icon(Icons.local_shipping),
-            title: Text('Pedidos'),
-          ),
-          ListTile(
-            leading: Icon(Icons.person),
-            title: Text('Conductores'),
-          ),
-          ListTile(
-            leading: Icon(Icons.route),
-            title: Text('Rutas'),
-          ),
-          ListTile(
-            leading: Icon(Icons.track_changes),
-            title: Text('Tracking'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class InfoCard extends StatelessWidget {
-  final String title;
-  final String content;
-  final IconData icon;
-
-  InfoCard({required this.title, required this.content, required this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 6,
-      child: Padding(
+      body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: [
-            Icon(icon, size: 40),
-            SizedBox(height: 10),
-            Text(
-              title,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            Divider(),
-            Text(content, style: TextStyle(fontSize: 16)),
+            buildCard('Total de Pedidos', data['totalOrders'], Icons.inventory_2, Colors.blue),
+            buildCard('Conductores Activos', data['activeDrivers'], Icons.directions_car, Colors.green),
+            buildCard('Rutas Activas', data['activeRoutes'], Icons.alt_route, Colors.orange),
+            buildCard('Eventos de Rastreo', data['trackingEvents'], Icons.track_changes, Colors.purple),
           ],
         ),
       ),
