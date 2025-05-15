@@ -2,22 +2,18 @@ import 'package:flutter/material.dart';
 import 'homepage.dart';
 
 void main() {
-  runApp(const LogisticApp());
+  runApp(LogisticDashboardApp());
 }
 
-class LogisticApp extends StatelessWidget {
-  const LogisticApp({super.key});
-
+class LogisticDashboardApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Logistic Company Admin',
-      debugShowCheckedModeBanner: false,
+      title: 'Panel de Gestión Logística',
       theme: ThemeData(
-        primarySwatch: Colors.indigo,
-        scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+        primarySwatch: Colors.blueGrey,
       ),
-      home: const Homepage(),
+      home: DashboardScreen(),
     );
   }
 }
