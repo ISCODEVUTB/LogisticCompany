@@ -12,4 +12,4 @@ async def test_create_route_bad_driver():
         response = await ac.post("/routes/", json=payload)
 
     assert response.status_code == 400
-    assert response.json() == {"detail": "Not found"}
+    assert response.json() == {"detail": "Not Found"}
