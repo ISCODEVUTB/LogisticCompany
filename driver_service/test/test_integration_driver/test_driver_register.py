@@ -12,7 +12,7 @@ async def test_register_driver_success():
             "phone": "3101234567",
             "email": "carlos@example.com"
         }
-        response = await client.post("/drivers/", json=payload)
+        response = await client.post("/drivers", json=payload)
         assert response.status_code == 201
         data = response.json()
         assert "id" in data

@@ -13,7 +13,7 @@ async def test_deactivate_driver_success():
             "phone": "3129988776",
             "email": "carlos@example.com"
         }
-        response_create = await client.post("/drivers/", json=payload)
+        response_create = await client.post("/drivers", json=payload)
         driver_id = response_create.json()["driver_id"]
 
         # Desactivar conductor

@@ -13,7 +13,7 @@ async def test_get_all_drivers_success():
             "phone": "3011112233",
             "email": "carlos@example.com"
         }
-        await client.post("/drivers/", json=payload)
+        await client.post("/drivers", json=payload)
 
         # Obtenemos la lista de conductores
         response = await client.get("/drivers/")
