@@ -9,7 +9,7 @@ async def test_assign_route_success():
         # Crear conductor
         payload = {
             "name": "Laura Rodríguez",
-            "license_number": "ROUTE001",
+            "license_id": "ROUTE001",
             "phone": "3101234567",
             "email": "laura@example.com"
         }
