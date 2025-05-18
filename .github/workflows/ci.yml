@@ -50,11 +50,7 @@ jobs:
         cd ../routing_service && python -m pytest test/ --cov=. --cov-report=xml:../routing_coverage.xml || true
         cd ../tracking_service && python -m pytest test/ --cov=. --cov-report=xml:../tracking_coverage.xml || true
 
-        cd ..
-        if [ -f shipping_coverage.xml ] && [ -f driver_coverage.xml ] && [ -f routing_coverage.xml ] && [ -f tracking_coverage.xml ]; then
-          coverage combine shipping_coverage.xml driver_coverage.xml routing_coverage.xml tracking_coverage.xml
-        fi
-        coverage xml
+       
     - name: Check coverage file
       run: ls -l coverage.xml
 
