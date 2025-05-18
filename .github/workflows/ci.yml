@@ -44,15 +44,17 @@ jobs:
         EOF
     - name: Run tests with coverage
       run: |
-        export PYTHONPATH=$PYTHONPATH:$(pwd):$(pwd)/shipping_order_service:$(pwd)/driver_service:$(pwd)/routing_service:$(pwd)/tracking_service
-        python -m pytest \
-          --cov=shipping_order_service \
-          --cov=driver_service \
-          --cov=routing_service \
-          --cov=tracking_service \
-          --cov-report=xml:coverage.xml \
-          --cov-report=term
+        export PYTHONPATH=$PYTHONPATH:$(pwd):
+        cd shipping_order_service && python -m pytest test/ --cov=. --cov-report=xml:../shipping_coverage.xml || true
+        cd ../driver_service && python -m pytest test/ --cov=. --cov-report=xml:../driver_coverage.xml || true
+        cd ../routing_service && python -m pytest test/ --cov=. --cov-report=xml:../routing_coverage.xml || true
+        cd ../tracking_service && python -m pytest test/ --cov=. --cov-report=xml:../tracking_coverage.xml || true
 
+        cd ..
+        if [ -f shipping_coverage.xml ] && [ -f driver_coverage.xml ] && [ -f routing_coverage.xml ] && [ -f tracking_coverage.xml ]; then
+          coverage combine shipping_coverage.xml driver_coverage.xml routing_coverage.xml tracking_coverage.xml
+        fi
+        coverage xml
     - name: Check coverage file
       run: ls -l coverage.xml
 
