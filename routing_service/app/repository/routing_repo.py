@@ -29,7 +29,7 @@ def create_route(route_data):
         "distance_km": route_data.distance_km,
         "driver_id": route_data.driver_id,
         "order_ids": route_data.order_ids,
-        "created_at": datetime.fromtimestamp(timestamp, timezone.utc).isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
         "status": "in_progress"
     }
     routes[route_id] = new_route
