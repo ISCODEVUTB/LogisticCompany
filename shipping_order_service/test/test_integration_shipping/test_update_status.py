@@ -1,3 +1,8 @@
+import pytest
+from httpx import AsyncClient
+from app.main import app
+from httpx._transports.asgi import ASGITransport
+
 @pytest.mark.asyncio
 async def test_update_shipping_order_status():
     transport = ASGITransport(app=app)
