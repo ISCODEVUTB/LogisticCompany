@@ -25,10 +25,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest pytest-cov pytest-asyncio
+    
     - name: Create __init__.py files for Python packages
       run: |
-        find . -type d -path "*/app*" -o -path "*/test*" | xargs -I {} touch {}/__init__.py
-        
+        find . -type d -not -path "*/__pycache__*" -not -path "*/\.*" | grep -E '/(app|test)($|/)' | xargs -I {} touch {}/__init__.py
+   
     - name: Run tests with coverage
       run: |
         export PYTHONPATH=$PYTHONPATH:$(pwd):$(pwd)/shipping_order_service:$(pwd)/driver_service:$(pwd)/routing_service:$(pwd)/tracking_service
