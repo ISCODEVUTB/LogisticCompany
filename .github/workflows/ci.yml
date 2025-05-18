@@ -45,10 +45,10 @@ jobs:
     - name: Run tests with coverage
       run: |
         export PYTHONPATH=$PYTHONPATH:$(pwd):
-        cd shipping_order_service && python -m pytest test/ --cov=. --cov-report=xml:../shipping_coverage.xml || true
-        cd ../driver_service && python -m pytest test/ --cov=. --cov-report=xml:../driver_coverage.xml || true
-        cd ../routing_service && python -m pytest test/ --cov=. --cov-report=xml:../routing_coverage.xml || true
-        cd ../tracking_service && python -m pytest test/ --cov=. --cov-report=xml:../tracking_coverage.xml || true
+        cd shipping_order_service && python -m pytest test/ --cov=. --cov-report=xml:../shipping_coverage.xml 
+        cd ../driver_service && python -m pytest test/ --cov=. --cov-report=xml:../driver_coverage.xml 
+        cd ../routing_service && python -m pytest test/ --cov=. --cov-report=xml:../routing_coverage.xml 
+        cd ../tracking_service && python -m pytest test/ --cov=. --cov-report=xml:../tracking_coverage.xml
 
        
     - name: Check coverage file
