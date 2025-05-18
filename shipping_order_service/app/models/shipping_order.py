@@ -24,5 +24,5 @@ class ShippingOrder:
         self.package = package
         self.status = status
         self.delivery_date = delivery_date
-        self.created_at = created_at or datetime.fromtimestamp(timestamp, timezone.utc)
-        self.updated_at = updated_at or datetime.fromtimestamp(timestamp, timezone.utc)
+        self.created_at = created_at or datetime.now(timezone.utc)
+        self.updated_at = updated_at or datetime.now(timezone.utc)
