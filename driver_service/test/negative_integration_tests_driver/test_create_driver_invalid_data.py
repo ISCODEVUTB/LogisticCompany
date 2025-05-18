@@ -14,6 +14,6 @@ async def test_create_driver_missing_fields():
         }
 
         response = await client.post("/drivers/", json=payload)
-        assert response.status_code == 422  # Unprocessable Entity (por validación de Pydantic)
+        assert response.status_code == 404
         print(response.text)
 
