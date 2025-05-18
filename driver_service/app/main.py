@@ -8,4 +8,4 @@ app = FastAPI(
 )
 
 # Registrar las rutas bajo el prefijo /drivers
-app.include_router(driver_router, prefix="/drivers", tags=["Drivers"])
+app.include_router(driver_router, prefix="/drivers/", tags=["Drivers"])

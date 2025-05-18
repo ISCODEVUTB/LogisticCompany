@@ -1,6 +1,6 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
-from app.main import app
+from driver_service.app.main import app
 
 @pytest.mark.asyncio
 async def test_create_driver_missing_fields():
@@ -13,5 +13,7 @@ async def test_create_driver_missing_fields():
             "email": "falta@example.com"
         }
 
-        response = await client.post("/drivers", json=payload)
+        response = await client.post("/drivers/", json=payload)
         assert response.status_code == 422  # Unprocessable Entity (por validación de Pydantic)
+        print(response.text)
+
