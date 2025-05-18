@@ -65,7 +65,7 @@ def assign_route(driver_id: str, route_id: str) -> bool:
     if not driver:
         return False
 
-    if "assigned_routes" not in driver._dict_:
+    if not hasattr(driver, "assigned_routes"):
             driver.assigned_routes = []
     
     if route_id not in driver.assigned_routes:
