@@ -1,0 +1,6 @@
+root_dir = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, root_dir)
+sys.path.insert(0, os.path.join(root_dir, 'routing_service'))
+sys.path.insert(0, os.path.join(root_dir, 'driver_service'))
+sys.path.insert(0, os.path.join(root_dir, 'shipping_order_service'))
+sys.path.insert(0, os.path.join(root_dir, 'tracking_service'))
