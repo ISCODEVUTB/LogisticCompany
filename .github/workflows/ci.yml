@@ -29,15 +29,19 @@ jobs:
     - name: Create __init__.py files for Python packages
       run: |
         find . -type d -not -path "*/__pycache__*" -not -path "*/\.*" | grep -E '/(app|test)($|/)' | xargs -I {} touch {}/__init__.py
+    
     - name: Create conftest.py for pytest
       run: |
+        cat > conftest.py << 'EOF'
+        import sys
+        import os
         root_dir = os.path.abspath(os.path.dirname(__file__))
         sys.path.insert(0, root_dir)
         sys.path.insert(0, os.path.join(root_dir, "routing_service"))
         sys.path.insert(0, os.path.join(root_dir, "driver_service"))
         sys.path.insert(0, os.path.join(root_dir, "shipping_order_service"))
-        sys.path.insert(0, os.path.join(root_dir, "tracking_service"))' > conftest.py
-   
+        sys.path.insert(0, os.path.join(root_dir, "tracking_service"))
+        EOF
     - name: Run tests with coverage
       run: |
         export PYTHONPATH=$PYTHONPATH:$(pwd):$(pwd)/shipping_order_service:$(pwd)/driver_service:$(pwd)/routing_service:$(pwd)/tracking_service
