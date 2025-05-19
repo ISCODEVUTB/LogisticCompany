@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.join(root_dir, 'tracking_service'))
 # Mock para evitar llamadas reales al servicio de tracking
 @pytest.fixture(autouse=True)
 def mock_tracking_service():
-    with unittest.mock.patch('app.services.shipping_order_service.send_tracking_event') as mock:
+    with unittest.mock.patch('app.services.tracking_service_client.send_tracking_event') as mock:
         # Configuramos el mock para que devuelva una corrutina que no hace nada
         async def mock_coro(*args, **kwargs):
             return None
