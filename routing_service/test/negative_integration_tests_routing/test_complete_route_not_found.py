@@ -1,7 +1,7 @@
 import pytest
 from httpx import AsyncClient
+from httpx._transports.asgi import ASGITransport
 from app.main import app
-from httpx import ASGITransport
 
 @pytest.mark.asyncio
 async def test_complete_route_not_found():
