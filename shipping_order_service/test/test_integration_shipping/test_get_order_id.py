@@ -1,10 +1,18 @@
 import pytest
-from httpx import AsyncClient
+from httpx import AsyncClient, Response
 from httpx._transports.asgi import ASGITransport
 from app.main import app
 
 @pytest.mark.asyncio
-async def test_get_shipping_order_by_id():
+async def test_get_shipping_order_by_id(mocker):
+    # Mock the tracking service client for the order creation part
+    mock_tracking_dict_response = {'mock_tracking_status': 'event_sent'}
+    mocker.patch(
+        'app.services.tracking_service_client.httpx.AsyncClient.post', # Corrected path
+        new_callable=mocker.AsyncMock,
+        return_value=mock_tracking_dict_response # Changed to a dict
+    )
+
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="https://test") as client:
         # Crear orden
