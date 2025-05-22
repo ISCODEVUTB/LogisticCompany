@@ -13,17 +13,26 @@ async def test_cancel_shipping_order(mocker):
         'mock_tracking_status': 'event_sent'
     }
 
-    # Mock the tracking service client to return an httpx.Response
-    # This mock will now be used for ALL calls to tracking_service_client.post
+    # Mock para la creación de órdenes (POST inicial)
+    mock_create_response = Response(201, json=mock_tracking_dict_response)
+    
+    # Mock para la cancelación (POST a /cancel)
+    mock_cancel_response = Response(204)
+    
+    # Usar side_effect para diferenciar entre creación y cancelación
+    async def mock_post_side_effect(*args, **kwargs):
+        # Si la URL contiene 'cancel', devolver respuesta de cancelación
+        if '/cancel' in str(args) or '/cancel' in str(kwargs):
+            return mock_cancel_response
+        # De lo contrario, devolver respuesta de creación
+        return mock_create_response
+    
+    # Configurar el mock con side_effect para manejar diferentes casos
     mocker.patch(
         'app.services.tracking_service_client.httpx.AsyncClient.post',
-        return_value=Response(201, json=mock_tracking_dict_response)
+        new_callable=mocker.AsyncMock,
+        side_effect=mock_post_side_effect
     )
-
-    # NOTE: The original side_effect logic that differentiated between
-    # order creation and cancellation for the tracking service is removed by this change.
-    # If the test requires different responses for different calls to the tracking service,
-    # this simplification might cause issues with the test's later stages (e.g., cancellation).
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="https://test") as client:
