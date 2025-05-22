@@ -5,13 +5,28 @@ from httpx._transports.asgi import ASGITransport
 
 @pytest.mark.asyncio
 async def test_update_shipping_order_status(mocker):
-    # Mock the tracking service client for POST (used for both order creation and status update)
-    # A generic response should be fine as the test mainly checks the status code of the shipping service
-    mock_tracking_dict_response = {'mock_tracking_status': 'event_sent'}
-    mocker.patch(
-        'app.services.tracking_service_client.httpx.AsyncClient.post', # Corrected path
+    # Mock the tracking service client for order creation
+    mock_tracking_response = Response(201, json={
+        'order_id': 'mocked-order-123',
+        'tracking_code': 'mocked-tracking-123',
+        'status': 'created',
+        'mock_tracking_status': 'event_sent'
+    })
+    
+    # Mock for status update operation - needs to return 204 status code
+    mock_status_update_response = Response(204, json={})
+    
+    # Use side_effect to return different responses based on the call
+    async def mock_post_side_effect(*args, **kwargs):
+        # Check if this is a status update operation based on URL or params
+        if '/status' in str(args) or '/status' in str(kwargs) or 'status' in str(kwargs.get('params', {})):
+            return mock_status_update_response
+        return mock_tracking_response
+    
+    mock_post = mocker.patch(
+        'app.services.tracking_service_client.httpx.AsyncClient.post',
         new_callable=mocker.AsyncMock,
-        return_value=mock_tracking_dict_response # Changed to a dict
+        side_effect=mock_post_side_effect
     )
 
     transport = ASGITransport(app=app)
