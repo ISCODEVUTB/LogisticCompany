@@ -16,27 +16,18 @@ sys.path.insert(0, os.path.join(root_dir, 'tracking_service'))
 def mock_services():
     # Mock para la función send_tracking_event
     with patch('shipping_order_service.app.services.tracking_service_client.send_tracking_event', new_callable=AsyncMock) as mock_send:
-        # Mock para AsyncClient desde httpx
-        with patch('httpx.AsyncClient') as mock_client_class:
-            # Mock para AsyncClient desde httpx._transports.asgi (por si acaso)
-            with patch('httpx._transports.asgi.AsyncClient', mock_client_class):
-                # Mock para ASGITransport
-                with patch('httpx.ASGITransport') as mock_transport:
-                    with patch('httpx._transports.asgi.ASGITransport', mock_transport):
-                        # Configurar el mock de AsyncClient
-                        mock_instance = AsyncMock()
-                        mock_response = AsyncMock()
-                        mock_response.status_code = 200
-                        mock_response.json.return_value = {"status": "success"}
-                        mock_instance.post.return_value = mock_response
-                        mock_instance.get.return_value = mock_response
-                        mock_instance.patch.return_value = mock_response
-                        mock_instance.delete.return_value = mock_response
-                        mock_client_class.return_value = mock_instance
-                        
-                        # Configurar el mock de send_tracking_event
-                        async def mock_coro(*args, **kwargs):
-                            return None
-                        mock_send.side_effect = mock_coro
-                        
-                        yield mock_send
+        async def mock_coro(*args, **kwargs):
+            return None
+        mock_send.side_effect = mock_coro
+
+        # This new patch specifically targets the AsyncClient used by the tracking_service_client.
+        # The individual integration tests for shipping_order_service already provide
+        # more detailed mocks for this specific path when they need to control responses
+        # from the tracking service. This conftest.py mock primarily ensures that no
+        # actual HTTP calls are made by the tracking_service_client if a test doesn't
+        # provide its own specific mock for it.
+        with patch('shipping_order_service.app.services.tracking_service_client.httpx.AsyncClient', new_callable=AsyncMock) as mock_specific_async_client:
+            # We can configure basic behavior for mock_specific_async_client if needed,
+            # e.g., mock_specific_async_client.return_value.post.return_value = AsyncMock(status_code=200, json=lambda: {"status": "mocked in conftest"})
+            # However, since tests re-mock this, a plain AsyncMock is likely sufficient.
+            yield mock_send # Yielding only mock_send as per original behavior

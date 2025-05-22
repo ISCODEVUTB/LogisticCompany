@@ -5,17 +5,19 @@ from httpx._transports.asgi import ASGITransport
 
 @pytest.mark.asyncio
 async def test_create_shipping_order_integration(mocker):
-    # Mock the tracking service client
-    mock_tracking_response = Response(201, json={
+    # Define the dictionary for the tracking service response
+    mock_tracking_dict_response = {
         'order_id': 'mocked-order-123',
         'tracking_code': 'mocked-tracking-123',
         'status': 'created',
         'mock_tracking_status': 'event_sent'
-    })
+    }
+
+    # Mock the tracking service client to return an httpx.Response
     mocker.patch(
         'app.services.tracking_service_client.httpx.AsyncClient.post', # Corrected path
-        new_callable=mocker.AsyncMock,
-        return_value=mock_tracking_response
+        new_callable=mocker.AsyncMock, # Ensures the mock behaves as an async function
+        return_value=Response(201, json=mock_tracking_dict_response)
     )
 
     transport = ASGITransport(app=app)

@@ -10,9 +10,9 @@ async def test_get_driver_by_id_success():
         # Primero registramos un conductor
         payload = {
             "name": "Laura Gómez",
-            "license_number": "XYZ987654",
-            "phone": "3007654321",
-            "email": "laura@example.com"
+            "license_id": "XYZ987654", # Changed from license_number
+            "phone": "3007654321"
+            # "email" field removed
         }
         create_response = await client.post("/drivers/", json=payload)
         assert create_response.status_code == 201
