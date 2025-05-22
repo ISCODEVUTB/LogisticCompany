@@ -11,4 +11,4 @@ async def test_get_driver_by_invalid_id():
 
         response = await client.get(f"/drivers/{driver_id}")
         assert response.status_code == 404
-        assert response.json()["detail"] == "Not Found"
+        assert response.json()["detail"] == "Driver not found"
