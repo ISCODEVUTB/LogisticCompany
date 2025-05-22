@@ -6,11 +6,16 @@ from httpx._transports.asgi import ASGITransport
 @pytest.mark.asyncio
 async def test_track_shipping_order_by_code(mocker):
     # Mock the tracking service client for POST (order creation)
-    mock_tracking_dict_response = {'mock_tracking_status': 'event_sent'}
+    mock_tracking_response = Response(201, json={
+        'order_id': 'mocked-order-123',
+        'tracking_code': 'mocked_tracking_code_from_post',
+        'status': 'created',
+        'mock_tracking_status': 'event_sent'
+    })
     mocker.patch(
         'app.services.tracking_service_client.httpx.AsyncClient.post', # Corrected path
         new_callable=mocker.AsyncMock,
-        return_value=mock_tracking_dict_response # Changed to a dict
+        return_value=mock_tracking_response
     )
 
     # Mock the tracking service client for GET (order tracking)
