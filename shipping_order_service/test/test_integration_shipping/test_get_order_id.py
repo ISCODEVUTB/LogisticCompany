@@ -18,6 +18,7 @@ async def test_get_shipping_order_by_id(mocker):
         'app.services.tracking_service_client.httpx.AsyncClient.post',
         new_callable=mocker.AsyncMock, # Ensures the mock behaves as an async function
         return_value=Response(201, json=mock_tracking_dict_response)
+    )
     # Mock the tracking service client for order creation
     mock_tracking_response = Response(201, json={
         'order_id': 'mocked-order-123',
