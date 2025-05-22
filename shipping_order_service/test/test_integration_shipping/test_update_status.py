@@ -44,7 +44,6 @@ async def test_update_shipping_order_status(mocker):
         'app.services.tracking_service_client.httpx.AsyncClient.post',
         new_callable=mocker.AsyncMock,
         side_effect=mock_post_side_effect
-        main
     )
 
     transport = ASGITransport(app=app)
