@@ -50,7 +50,6 @@ async def test_get_shipping_order_by_id(mocker):
         'app.services.tracking_service_client.httpx.AsyncClient.get',
         new_callable=mocker.AsyncMock,
         return_value=mock_get_response
-        main
     )
 
     # Note: The test logic for GET /orders/{order_id} seems to rely on the
