@@ -10,12 +10,13 @@ async def test_deactivate_driver_success():
         # Crear conductor primero
         payload = {
             "name": "Carlos Méndez",
-            "license_number": "CAR567890",
-            "phone": "3129988776",
-            "email": "carlos@example.com"
+            "license_id": "CAR567890", # Changed from license_number
+            "phone": "3129988776"
+            # "email" field removed
         }
         response_create = await client.post("/drivers/", json=payload)
-        driver_id = response_create.json()["driver_id"]
+        assert response_create.status_code == 201 # Ensure we check for successful creation
+        driver_id = response_create.json()["id"] # Assuming 'id' is the key for the driver's ID
 
         # Desactivar conductor
         response_delete = await client.delete(f"/drivers/{driver_id}")

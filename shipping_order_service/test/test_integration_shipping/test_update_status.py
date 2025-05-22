@@ -5,13 +5,22 @@ from httpx._transports.asgi import ASGITransport
 
 @pytest.mark.asyncio
 async def test_update_shipping_order_status(mocker):
-    # Mock the tracking service client for POST (used for both order creation and status update)
-    # A generic response should be fine as the test mainly checks the status code of the shipping service
-    mock_tracking_dict_response = {'mock_tracking_status': 'event_sent'}
+    # Define the dictionary for the tracking service POST response
+    # This mock is used for the initial order creation.
+    mock_tracking_dict_response = {
+        'order_id': 'mocked-order-123', # Essential for response.json()["order_id"]
+        'tracking_code': 'mocked-tracking-code-update', # Added for consistency
+        'status': 'created', # Added for consistency
+        'mock_tracking_status': 'event_sent' # Original field from the file
+    }
+
+    # Mock the tracking service client for POST
+    # This will be returned for the order creation call.
+    # If the app's status update logic also calls this, it will also receive this response.
     mocker.patch(
-        'app.services.tracking_service_client.httpx.AsyncClient.post', # Corrected path
-        new_callable=mocker.AsyncMock,
-        return_value=mock_tracking_dict_response # Changed to a dict
+        'app.services.tracking_service_client.httpx.AsyncClient.post',
+        new_callable=mocker.AsyncMock, # Ensures the mock behaves as an async function
+        return_value=Response(201, json=mock_tracking_dict_response)
     )
 
     transport = ASGITransport(app=app)

@@ -5,13 +5,24 @@ from app.main import app
 
 @pytest.mark.asyncio
 async def test_get_shipping_order_by_id(mocker):
-    # Mock the tracking service client for the order creation part
-    mock_tracking_dict_response = {'mock_tracking_status': 'event_sent'}
+    # Define the dictionary for the tracking service POST response
+    mock_tracking_dict_response = {
+        'order_id': 'mocked-order-123', # Essential for create_response.json()["order_id"]
+        'tracking_code': 'mocked-tracking-123',
+        'status': 'created',
+        'mock_tracking_status': 'event_sent' # Original field from the file
+    }
+
+    # Mock the tracking service client for the order creation part (POST)
     mocker.patch(
-        'app.services.tracking_service_client.httpx.AsyncClient.post', # Corrected path
-        new_callable=mocker.AsyncMock,
-        return_value=mock_tracking_dict_response # Changed to a dict
+        'app.services.tracking_service_client.httpx.AsyncClient.post',
+        new_callable=mocker.AsyncMock, # Ensures the mock behaves as an async function
+        return_value=Response(201, json=mock_tracking_dict_response)
     )
+
+    # Note: The test logic for GET /orders/{order_id} seems to rely on the
+    # application's state after creation, as there's no explicit mock for AsyncClient.get.
+    # This part remains unchanged.
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="https://test") as client:

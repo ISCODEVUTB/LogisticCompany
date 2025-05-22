@@ -10,15 +10,18 @@ async def test_get_all_drivers_success():
         # Registramos al menos un conductor para asegurar que la lista no esté vacía
         payload = {
             "name": "Carlos Mendoza",
-            "license_number": "CAR123456",
-            "phone": "3011112233",
-            "email": "carlos@example.com"
+            "license_id": "CAR123456", # Changed from license_number
+            "phone": "3011112233"
+            # "email" field removed
         }
-        await client.post("/drivers/", json=payload)
+        create_response = await client.post("/drivers/", json=payload)
+        assert create_response.status_code == 201 # Ensure successful creation
 
         # Obtenemos la lista de conductores
         response = await client.get("/drivers/")
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
-        assert any(driver["license_number"] == "CAR123456" for driver in data)
+        # Ensure the list is not empty before trying to access driver details
+        assert len(data) > 0 
+        assert any(driver["license_id"] == "CAR123456" for driver in data)
