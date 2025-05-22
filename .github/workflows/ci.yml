@@ -50,6 +50,10 @@ jobs:
         cd ../routing_service && python -m pytest test/ --cov=. --cov-report=xml:../routing_coverage.xml 
         cd ../tracking_service && python -m pytest test/ --cov=. --cov-report=xml:../tracking_coverage.xml
 
+    - name: Combine coverage reports
+      run: |
+        coverage combine shipping_coverage.xml driver_coverage.xml routing_coverage.xml tracking_coverage.xml
+        coverage xml -o coverage.xml
        
     - name: Check coverage file
       run: ls -l coverage.xml

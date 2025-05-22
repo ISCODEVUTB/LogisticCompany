@@ -16,7 +16,8 @@ router = APIRouter()
 
 @router.post("/orders", response_model=ShippingOrderResponseDTO, status_code=201)
 async def create_order(dto: ShippingOrderCreateDTO):
-    return await create_shipping_order(dto)
+    actual_dto_from_service = await create_shipping_order(dto)
+    return actual_dto_from_service
 
 
 @router.get("/orders/{order_id}", response_model=ShippingOrderResponseDTO)
