@@ -28,15 +28,13 @@ async def test_get_shipping_order_by_id(mocker):
     mocker.patch(
         'app.services.tracking_service_client.httpx.AsyncClient.post',
         new_callable=mocker.AsyncMock,
-        return_value=mock_tracking_response
-    )
+        return_value=mock_tracking_response)
     
     # Mock GET requests
     mocker.patch(
         'app.services.tracking_service_client.httpx.AsyncClient.get',
         new_callable=mocker.AsyncMock,
-        return_value=mock_get_response
-    )
+        return_value=mock_get_response)
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="https://test") as client:
