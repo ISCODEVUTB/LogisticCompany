@@ -1,7 +1,7 @@
 import pytest
 from httpx import AsyncClient
 from httpx._transports.asgi import ASGITransport
-from app.main import app
+from driver_service.app.main import app
 
 @pytest.mark.asyncio
 async def test_deactivate_nonexistent_driver():

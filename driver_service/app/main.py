@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api.routes import router as driver_router
+from driver_service.app.api.routes import router as driver_router
 
 app = FastAPI(
     title="Driver Microservice",

@@ -1,6 +1,6 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
-from app.main import app # This should resolve to driver_service.app.main
+from driver_service.app.main import app # This should resolve to driver_service.app.main
 
 @pytest.mark.asyncio
 async def test_register_driver_success(): # Assuming original name was kept
