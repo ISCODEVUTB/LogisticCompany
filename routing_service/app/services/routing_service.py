@@ -1,9 +1,14 @@
 from app.repository.routing_repo import create_route, get_all_routes, delete_route, mark_route_completed, get_active_routes
 from app.schemas.routing_schema import RouteCreate
+from pydantic import BaseModel
 
 class RouteService:
     def create(self, route_data: RouteCreate):
-        return create_route(route_data)
+        if isinstance(route_data, BaseModel):
+            payload = route_data.dict()
+        else:
+            payload = route_data # Assuming it's already a dict if not a BaseModel
+        return create_route(payload)
 
     def get_all(self):
         return get_all_routes()

@@ -12,4 +12,4 @@ async def test_complete_route_not_found():
         response = await client.patch(f"/routes/{fake_route_id}/complete")
 
         assert response.status_code == 404
-        assert response.json()["detail"] == "Not Found"
+    assert response.json()["detail"] == "Route not found"

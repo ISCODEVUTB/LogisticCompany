@@ -7,14 +7,18 @@ import uuid
 async def test_complete_route_success():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="https://test") as client:
-        # Crear una ruta sin órdenes ni conductor
-        route_id = str(uuid.uuid4())
+        # Crear una ruta
         payload = {
-            "id": route_id,
-            "driver_id": None,
-            "order_ids": []
+            "origin": "Warehouse A",
+            "destination": "Customer B",
+            "estimated_time": 30,
+            "distance_km": 7.2,
+            "driver_id": None, # Or a valid driver_id if needed for completion logic later
+            "order_ids": [] # Or valid order_ids if needed
         }
-        await client.post("/routes/", json=payload)
+        create_response = await client.post("/routes/", json=payload)
+        assert create_response.status_code == 200 # Ensure route creation is successful
+        route_id = create_response.json()["id"]
 
         # Marcar como completada
         response = await client.patch(f"/routes/{route_id}/complete")

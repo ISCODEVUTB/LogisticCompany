@@ -12,4 +12,4 @@ async def test_delete_route_not_found():
         response = await client.delete(f"/routes/{fake_route_id}")
 
         assert response.status_code == 404
-        assert response.json()["detail"] == "Not Found"
+    assert response.json()["detail"] == "Route not found"

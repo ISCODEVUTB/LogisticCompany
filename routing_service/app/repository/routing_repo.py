@@ -23,12 +23,12 @@ def create_route(route_data):
     route_id = str(uuid.uuid4())
     new_route = {
         "id": route_id,
-        "origin": route_data.origin,
-        "destination": route_data.destination,
-        "estimated_time": route_data.estimated_time,
-        "distance_km": route_data.distance_km,
-        "driver_id": route_data.driver_id,
-        "order_ids": route_data.order_ids,
+        "origin": route_data['origin'],
+        "destination": route_data['destination'],
+        "estimated_time": route_data['estimated_time'],
+        "distance_km": route_data['distance_km'],
+        "driver_id": route_data['driver_id'],
+        "order_ids": route_data['order_ids'],
         "created_at": datetime.now(timezone.utc).isoformat(),
         "status": "in_progress"
     }
