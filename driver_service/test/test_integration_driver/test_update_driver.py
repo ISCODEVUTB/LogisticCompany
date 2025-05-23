@@ -1,7 +1,7 @@
 import pytest
 from httpx import AsyncClient
 from httpx._transports.asgi import ASGITransport
-from app.main import app
+from driver_service.app.main import app
 
 @pytest.mark.asyncio
 async def test_update_driver_success():
@@ -16,7 +16,7 @@ async def test_update_driver_success():
         }
         response_create = await client.post("/drivers/", json=payload)
         assert response_create.status_code == 201 # Ensure successful creation
-        driver_id = response_create.json()["id"] # Assuming 'id' is the key
+        driver_id = response_create.json()["driver_id"] # Assuming 'id' is the key
 
         # Actualizar conductor
         update_payload = {

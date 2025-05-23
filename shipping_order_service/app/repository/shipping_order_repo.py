@@ -5,7 +5,7 @@ from app.models.shipping_order import ShippingOrder
 from datetime import datetime
 
 # Ruta del archivo JSON
-DB_FILE = Path("app/repository/orders.json")
+DB_FILE = Path("shipping_order_service/app/repository/orders.json")
 
 
 def load_orders() -> Dict[str, dict]:

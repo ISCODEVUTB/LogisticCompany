@@ -1,29 +1,16 @@
 import pytest
-from httpx import AsyncClient, Response
-from app.main import app
+from httpx import AsyncClient
+from shipping_order_service.app.main import app
 from httpx._transports.asgi import ASGITransport
 
 @pytest.mark.asyncio
 async def test_cancel_shipping_order(mocker):
-    # Define the dictionary for the tracking service response
-    mock_tracking_dict_response = {
-        'order_id': 'mocked-order-123',
-        'tracking_code': 'mocked-tracking-123',
-        'status': 'created',
-        'mock_tracking_status': 'event_sent'
-    }
-
-    # Mock the tracking service client to return an httpx.Response
-    # This mock will now be used for ALL calls to tracking_service_client.post
+    # Mock the send_tracking_event function
     mocker.patch(
-        'app.services.tracking_service_client.httpx.AsyncClient.post',
-        return_value=Response(201, json=mock_tracking_dict_response)
+        'app.services.shipping_order_service.send_tracking_event',
+        new_callable=mocker.AsyncMock,
+        return_value=None
     )
-
-    # NOTE: The original side_effect logic that differentiated between
-    # order creation and cancellation for the tracking service is removed by this change.
-    # If the test requires different responses for different calls to the tracking service,
-    # this simplification might cause issues with the test's later stages (e.g., cancellation).
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="https://test") as client:
