@@ -8,13 +8,17 @@ async def test_delete_route_success():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="https://test") as client:
         # Creamos una ruta de prueba
-        route_id = str(uuid.uuid4())
         payload = {
-            "id": route_id,
+            "origin": "Source X",
+            "destination": "Destination Y",
+            "estimated_time": 75,
+            "distance_km": 15.0,
             "driver_id": None,
             "order_ids": []
         }
-        await client.post("/routes/", json=payload)
+        create_response = await client.post("/routes/", json=payload)
+        assert create_response.status_code == 200 # Ensure route creation is successful
+        route_id = create_response.json()["id"]
 
         # Luego la eliminamos
         response = await client.delete(f"/routes/{route_id}")
