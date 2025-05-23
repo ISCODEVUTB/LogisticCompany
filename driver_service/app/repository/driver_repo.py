@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from app.models.driver import Driver
 
 # Ruta del archivo JSON
-DB_FILE = Path("app/repository/drivers.json")
+DB_FILE = Path("driver_service/app/repository/drivers.json")
 
 # Define a set of allowed keys for Driver model initialization
 ALLOWED_DRIVER_KEYS = {'driver_id', 'name', 'license_id', 'phone', 'status', 'created_at', 'updated_at'}

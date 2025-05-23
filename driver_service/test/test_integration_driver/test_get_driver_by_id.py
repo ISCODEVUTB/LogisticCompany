@@ -1,7 +1,7 @@
 import pytest
 from httpx import AsyncClient
 from httpx._transports.asgi import ASGITransport
-from app.main import app
+from driver_service.app.main import app
 
 @pytest.mark.asyncio
 async def test_get_driver_by_id_success():
@@ -16,11 +16,11 @@ async def test_get_driver_by_id_success():
         }
         create_response = await client.post("/drivers/", json=payload)
         assert create_response.status_code == 201
-        driver_id = create_response.json()["id"]
+        driver_id = create_response.json()["driver_id"]
 
         # Ahora intentamos obtenerlo por su ID
         get_response = await client.get(f"/drivers/{driver_id}")
         assert get_response.status_code == 200
         data = get_response.json()
-        assert data["id"] == driver_id
+        assert data["driver_id"] == driver_id
         assert data["name"] == payload["name"]
