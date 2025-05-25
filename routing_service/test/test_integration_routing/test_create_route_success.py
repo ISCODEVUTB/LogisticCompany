@@ -1,14 +1,28 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
 from app.main import app
-from unittest.mock import patch
+from unittest.mock import patch, AsyncMock
 
 @pytest.mark.asyncio
 async def test_create_route_success():
-    # Mover la creación del cliente dentro del contexto de los mocks
-    # para asegurar que esté disponible cuando se necesite
-    with patch("app.api.routes.validate_driver", return_value=True) as mock_validate_driver, \
-         patch("app.api.routes.validate_orders", return_value=True) as mock_validate_orders:
+    # Definir funciones mock asíncronas para todas las dependencias
+    async def mock_validate_driver(*args, **kwargs):
+        return True
+        
+    async def mock_validate_orders(*args, **kwargs):
+        return True
+    
+    async def mock_notify_driver_assignment(*args, **kwargs):
+        return True
+        
+    async def mock_update_order_statuses(*args, **kwargs):
+        return True
+    
+    # Aplicar todos los mocks necesarios
+    with patch("app.api.routes.validate_driver", side_effect=mock_validate_driver) as mock_validate_driver, \
+         patch("app.api.routes.validate_orders", side_effect=mock_validate_orders) as mock_validate_orders, \
+         patch("app.api.routes.notify_driver_assignment", side_effect=mock_notify_driver_assignment) as mock_notify_driver, \
+         patch("app.api.routes.update_order_statuses", side_effect=mock_update_order_statuses) as mock_update_orders:
         
         # Crear el cliente después de los mocks
         async with AsyncClient(transport=ASGITransport(app=app), base_url="https://test") as client:
@@ -30,3 +44,4 @@ async def test_create_route_success():
             assert data["origin"] == "Central Hub"
             assert data["driver_id"] == "driver123"
             assert "id" in data
+
