@@ -70,7 +70,7 @@ async def complete_route(route_id: str):
     if route.get("driver_id"):
         notify_success = await notify_driver_assignment(route["driver_id"], None)  # limpiamos asignación
         if not notify_success:
-            raise HTTPException(status_code=500, detail="Failed to notify driver upon route completion")
+            raise HTTPException(status_code=500, detail="Failed to update route")
 
     # Actualizar el estado de la ruta a 'completed'
     updated = service.mark_as_completed(route_id)
