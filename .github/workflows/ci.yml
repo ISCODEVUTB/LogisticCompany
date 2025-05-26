@@ -44,16 +44,26 @@ jobs:
         EOF
     - name: Run tests with coverage
       run: |
-        export PYTHONPATH=$PYTHONPATH:$(pwd):
-        cd shipping_order_service && python -m pytest test/ --cov=. --cov-report=xml:../shipping_coverage.xml 
-        cd ../driver_service && python -m pytest test/ --cov=. --cov-report=xml:../driver_coverage.xml 
-        cd ../routing_service && python -m pytest test/ --cov=. --cov-report=xml:../routing_coverage.xml 
-        cd ../tracking_service && python -m pytest test/ --cov=. --cov-report=xml:../tracking_coverage.xml
+        export PYTHONPATH=$PYTHONPATH:$(pwd)
+        cd shipping_order_service && python -m pytest test/ --cov=. --cov-report=term --cov-report=xml:../shipping_coverage.xml
+        mv .coverage ../.coverage.shipping
+
+        cd ../driver_service && python -m pytest test/ --cov=. --cov-report=term --cov-report=xml:../driver_coverage.xml
+        mv .coverage ../.coverage.driver
+
+        cd ../routing_service && python -m pytest test/ --cov=. --cov-report=term --cov-report=xml:../routing_coverage.xml
+        mv .coverage ../.coverage.routing
+
+        cd ../tracking_service && python -m pytest test/ --cov=. --cov-report=term --cov-report=xml:../tracking_coverage.xml
+        mv .coverage ../.coverage.tracking
+
+        cd ..
 
     - name: Combine coverage reports
       run: |
-        coverage combine shipping_coverage.xml driver_coverage.xml routing_coverage.xml tracking_coverage.xml
+        coverage combine .coverage.shipping .coverage.driver .coverage.routing .coverage.tracking
         coverage xml -o coverage.xml
+
        
     - name: Check coverage file
       run: ls -l coverage.xml
