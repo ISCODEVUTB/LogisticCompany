@@ -74,8 +74,9 @@ jobs:
       with:
         projectBaseDir: .
         args: >
+          -Dsonar.autoscan.enabled=false
           -Dsonar.python.coverage.reportPaths=coverage.xml
-          -Dsonar.sources=shipping_order_service,driver_service,routing_service,tracking_service
+          -Dsonar.sources=shipping_order_service/app,driver_service/app,routing_service/app,tracking_service/app
           -Dsonar.tests=shipping_order_service/test,driver_service/test,routing_service/test,tracking_service/test
           -Dsonar.python.xunit.reportPath=test-results.xml
       env:
