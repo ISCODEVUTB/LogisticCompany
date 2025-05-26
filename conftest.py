@@ -2,9 +2,11 @@ import os
 import sys
 import pytest
 import unittest.mock
+import respx
 from unittest.mock import AsyncMock, patch, MagicMock
+from httpx import Response
 
-root_dir = os.path.abspath(os.path.dirname(__file__))
+root_dir = os.path.abspath(os.path.dirname(__file__ ))
 sys.path.insert(0, root_dir)
 sys.path.insert(0, os.path.join(root_dir, 'routing_service'))
 sys.path.insert(0, os.path.join(root_dir, 'driver_service'))
@@ -20,14 +22,54 @@ def mock_services():
             return None
         mock_send.side_effect = mock_coro
 
-        # This new patch specifically targets the AsyncClient used by the tracking_service_client.
-        # The individual integration tests for shipping_order_service already provide
-        # more detailed mocks for this specific path when they need to control responses
-        # from the tracking service. This conftest.py mock primarily ensures that no
-        # actual HTTP calls are made by the tracking_service_client if a test doesn't
-        # provide its own specific mock for it.
-        with patch('shipping_order_service.app.services.tracking_service_client.httpx.AsyncClient', new_callable=AsyncMock) as mock_specific_async_client:
-            # We can configure basic behavior for mock_specific_async_client if needed,
-            # e.g., mock_specific_async_client.return_value.post.return_value = AsyncMock(status_code=200, json=lambda: {"status": "mocked in conftest"})
-            # However, since tests re-mock this, a plain AsyncMock is likely sufficient.
-            yield mock_send # Yielding only mock_send as per original behavior
+        with patch('shipping_order_service.app.services.tracking_service_client.httpx.AsyncClient', new_callable=AsyncMock ) as mock_specific_async_client:
+           
+            yield mock_send 
+
+@pytest.fixture(autouse=True, scope="function")
+def mock_tracking_api():
+    """
+    Fixture que automáticamente mockea todas las llamadas HTTP en los tests de tracking_service
+    """
+    with respx.mock(base_url="https://test" ) as mock:
+        # Configurar rutas comunes
+        mock.post("/tracking/track").mock(
+            return_value=Response(
+                status_code=200,
+                json={"status": "success"}
+            )
+        )
+        
+        # Para el test de tracking code vacío
+        mock.post("/tracking/track", json={"tracking_code": "", "status": "in transit", "location": "Bogotá"}).mock(
+            return_value=Response(
+                status_code=422,
+                json={"detail": "Invalid tracking code"}
+            )
+        )
+        
+        # Para el test de estado inválido
+        mock.post("/tracking/track", json={"tracking_code": "TRK123456", "status": "flying"}).mock(
+            return_value=Response(
+                status_code=422,
+                json={"detail": "Invalid status"}
+            )
+        )
+        
+        # Para el test de tracking code no encontrado
+        mock.get("/tracking/track/NOCODE123").mock(
+            return_value=Response(
+                status_code=404,
+                json={"detail": "Tracking code not found"}
+            )
+        )
+        
+        # Para el test de historial exitoso
+        mock.get("/tracking/track/TRK654321").mock(
+            return_value=Response(
+                status_code=200,
+                json=[{"tracking_code": "TRK654321", "status": "in transit"}]
+            )
+        )
+        
+        yield mock
