@@ -26,8 +26,11 @@ jobs:
           flutter-version: '3.10.0'
           channel: 'stable'
       
-      - name: Install dependencies
-        run: flutter pub get
+      - name: Clean Pub Cache and Update Dependencies
+        run: |
+          flutter pub cache clean
+          rm -f pubspec.lock
+          flutter pub get
       
       - name: Analyze project
         run: flutter analyze
