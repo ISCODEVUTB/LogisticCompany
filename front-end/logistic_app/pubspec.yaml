@@ -22,3 +22,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+# Agregar esta sección para forzar la versión compatible con null safety
+dependency_overrides:
+  test_coverage: ^0.5.0
+
+
