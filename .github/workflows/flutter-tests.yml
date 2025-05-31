@@ -31,10 +31,12 @@ jobs:
           # Verificar contenido actual del pubspec.yaml
           cat pubspec.yaml
           
-          # Asegurarse que la versión de test_coverage sea compatible con null safety
-          sed -i 's/test_coverage: .*$/test_coverage: ^0.5.0/' pubspec.yaml
+          # Forzar resolución de dependencias con override
+          echo "" >> pubspec.yaml
+          echo "dependency_overrides:" >> pubspec.yaml
+          echo "  test_coverage: ^0.5.0" >> pubspec.yaml
           
-          # Verificar que el cambio se aplicó
+          # Verificar que los cambios se aplicaron
           cat pubspec.yaml
           
           # Limpiar caché y actualizar dependencias
@@ -57,3 +59,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
