@@ -7,10 +7,12 @@ import 'screens/drivers_screen.dart';
 import 'screens/routes_screen.dart';
 
 void main( ) {
-  runApp(LogisticDashboardApp());
+  runApp(const LogisticDashboardApp());
 }
 
 class LogisticDashboardApp extends StatelessWidget {
+  const LogisticDashboardApp({Key? key}) : super(key: key);
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,14 +21,16 @@ class LogisticDashboardApp extends StatelessWidget {
         primarySwatch: Colors.blueGrey,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: DashboardScreen(),
+      home: const DashboardScreen(),
     );
   }
 }
 
 class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({Key? key}) : super(key: key);
+  
   @override
-  _DashboardScreenState createState() => _DashboardScreenState();
+  State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
@@ -60,7 +64,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         });
       }
     } catch (e) {
-      print('Error al cargar datos: $e');
+      // Usar un sistema de logging en lugar de print
+      debugPrint('Error al cargar datos: $e');
       // Usar datos de muestra en caso de error
     }
   }
@@ -76,13 +81,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       case 0:
         return _buildDashboardContent();
       case 1:
-        return OrdersScreen();
+        return const OrdersScreen();
       case 2:
-        return DriversScreen();
+        return const DriversScreen();
       case 3:
-        return RoutesScreen();
+        return const RoutesScreen();
       case 4:
-        return TrackingScreen();
+        return const TrackingScreen();
       default:
         return _buildDashboardContent();
     }
@@ -137,12 +142,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Panel de Gestión Logística'),
+        title: const Text('Panel de Gestión Logística'),
         backgroundColor: Colors.blueGrey[700],
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Center(child: Text("Usuario: $adminUser", style: TextStyle(fontWeight: FontWeight.bold))),
+            child: Center(
+              child: Text(
+                "Usuario: $adminUser", 
+                style: const TextStyle(fontWeight: FontWeight.bold)
+              )
+            ),
           )
         ],
       ),
@@ -162,7 +172,11 @@ class NavigationPanel extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
 
-  NavigationPanel({required this.selectedIndex, required this.onItemTapped});
+  const NavigationPanel({
+    Key? key,
+    required this.selectedIndex, 
+    required this.onItemTapped
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -175,7 +189,7 @@ class NavigationPanel extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.grey.shade300,
             ),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -196,17 +210,17 @@ class NavigationPanel extends StatelessWidget {
           _buildNavItem(2, Icons.person, 'Conductores'),
           _buildNavItem(3, Icons.route, 'Rutas'),
           _buildNavItem(4, Icons.track_changes, 'Tracking'),
-          Divider(),
+          const Divider(),
           ListTile(
             leading: Icon(Icons.settings, color: Colors.grey[600]),
-            title: Text('Configuración'),
+            title: const Text('Configuración'),
             onTap: () {
               // Implementar navegación a configuración
             },
           ),
           ListTile(
             leading: Icon(Icons.help, color: Colors.grey[600]),
-            title: Text('Ayuda'),
+            title: const Text('Ayuda'),
             onTap: () {
               // Implementar navegación a ayuda
             },
@@ -218,7 +232,10 @@ class NavigationPanel extends StatelessWidget {
 
   Widget _buildNavItem(int index, IconData icon, String title) {
     return ListTile(
-      leading: Icon(icon, color: selectedIndex == index ? Colors.blueGrey[700] : Colors.grey[600]),
+      leading: Icon(
+        icon, 
+        color: selectedIndex == index ? Colors.blueGrey[700] : Colors.grey[600]
+      ),
       title: Text(
         title,
         style: TextStyle(
@@ -240,14 +257,15 @@ class InfoCard extends StatelessWidget {
   final Color iconColor;
   final VoidCallback? onTap;
 
-  InfoCard({
+  const InfoCard({
+    Key? key,
     required this.title, 
     required this.content, 
     required this.icon,
     required this.color,
     required this.iconColor,
     this.onTap,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -271,11 +289,11 @@ class InfoCard extends StatelessWidget {
               Row(
                 children: [
                   Icon(icon, size: 40, color: iconColor),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       title,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 20, 
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
@@ -284,11 +302,11 @@ class InfoCard extends StatelessWidget {
                   ),
                 ],
               ),
-              Divider(color: Colors.black45),
+              const Divider(color: Colors.black45),
               Expanded(
                 child: Text(
                   content, 
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     height: 1.5,
                   ),
