@@ -363,8 +363,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
           // Implementar creación de nuevo pedido
         },
         backgroundColor: Colors.blueGrey[700],
-        child: const Icon(Icons.add),
         tooltip: 'Nuevo pedido',
+        child: const Icon(Icons.add),
       ),
     );
   }
