@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 class TrackingScreen extends StatefulWidget {
   final String? orderId;
   
-  const TrackingScreen({Key? key, this.orderId} ) : super(key: key);
+  const TrackingScreen({super.key, this.orderId} );
 
   @override
   State<TrackingScreen> createState() => _TrackingScreenState();
@@ -288,7 +288,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.search, size: 80, color: Colors.grey),
+                            const Icon(Icons.search, size: 80, color: Colors.grey),
                             const SizedBox(height: 16),
                             Text(
                               'Ingrese un número de pedido para rastrear',
@@ -411,15 +411,16 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                             ],
                                           ),
                                         ),
-                                        ElevatedButton.icon(
-                                          icon: const Icon(Icons.message),
-                                          label: const Text('Contactar'),
+                                        ElevatedButton(
                                           onPressed: () {
-                                            // Implementar contacto
+                                            // Implementar llamada al conductor
                                           },
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: Colors.green,
+                                            shape: const CircleBorder(),
+                                            padding: const EdgeInsets.all(12),
                                           ),
+                                          child: const Icon(Icons.phone, color: Colors.white),
                                         ),
                                       ],
                                     ),
@@ -430,9 +431,9 @@ class _TrackingScreenState extends State<TrackingScreen> {
                             
                             const SizedBox(height: 24),
                             
-                            // Mapa (simulado)
+                            // Mapa de seguimiento
                             const Text(
-                              'Ubicación del Envío',
+                              'Ubicación del Pedido',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -450,16 +451,16 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.map, size: 48, color: Colors.grey[600]),
+                                    const Icon(Icons.map, size: 48, color: Colors.grey),
                                     const SizedBox(height: 8),
-                                    Text(
-                                      'Mapa de ubicación',
-                                      style: TextStyle(color: Colors.grey[600]),
+                                    const Text(
+                                      'Mapa de seguimiento',
+                                      style: TextStyle(color: Colors.grey),
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
                                       'Lat: ${trackingData!['map']['currentLatitude']}, Long: ${trackingData!['map']['currentLongitude']}',
-                                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                                      style: const TextStyle(color: Colors.grey, fontSize: 12),
                                     ),
                                   ],
                                 ),
