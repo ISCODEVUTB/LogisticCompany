@@ -595,8 +595,8 @@ class _RoutesScreenState extends State<RoutesScreen> {
           // Implementar creación de nueva ruta
         },
         backgroundColor: Colors.blueGrey[700],
-        child: const Icon(Icons.add),
         tooltip: 'Nueva ruta',
+        child: const Icon(Icons.add),
       ),
     );
   }
