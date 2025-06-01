@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key} ) : super(key: key);
+  const DashboardScreen({super.key} ) : super();
   
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -125,10 +125,10 @@ class NavigationPanel extends StatelessWidget {
   final Function(int) onItemTapped;
 
   const NavigationPanel({
-    Key? key,
+    super.key,
     required this.selectedIndex, 
     required this.onItemTapped
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -182,13 +182,13 @@ class InfoCard extends StatelessWidget {
   final Color iconColor;
 
   const InfoCard({
-    Key? key,
+    super.key,
     required this.title, 
     required this.content, 
     required this.icon,
     required this.color,
     required this.iconColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
