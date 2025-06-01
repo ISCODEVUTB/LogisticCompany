@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:logistic_company_web/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
 
