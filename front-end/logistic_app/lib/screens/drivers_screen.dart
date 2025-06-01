@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class DriversScreen extends StatefulWidget {
-  const DriversScreen({Key? key} ) : super(key: key);
+  const DriversScreen({super.key} );
   
   @override
   State<DriversScreen> createState() => _DriversScreenState();
@@ -469,40 +469,39 @@ class _DriversScreenState extends State<DriversScreen> {
                                 radius: 30,
                                 backgroundImage: NetworkImage(driver['photo']),
                               ),
-                              title: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      driver['name'],
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: _getStatusColor(driver['status']).withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      driver['status'],
-                                      style: TextStyle(
-                                        color: _getStatusColor(driver['status']),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                              title: Text(
+                                driver['name'],
+                                style: const TextStyle(fontWeight: FontWeight.bold),
                               ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const SizedBox(height: 4),
-                                  Text(driver['vehicle']),
+                                  Text('ID: ${driver['id']} | Vehículo: ${driver['vehicle']}'),
                                   const SizedBox(height: 4),
                                   Row(
                                     children: [
-                                      const Icon(Icons.star, color: Colors.amber, size: 16),
-                                      Text(' ${driver['rating']} · ${driver['completedDeliveries']} entregas'),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: _getStatusColor(driver['status']).withOpacity(0.2),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Text(
+                                          driver['status'],
+                                          style: TextStyle(
+                                            color: _getStatusColor(driver['status']),
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.star, color: Colors.amber, size: 16),
+                                          Text(' ${driver['rating']}'),
+                                        ],
+                                      ),
                                     ],
                                   ),
                                 ],
@@ -530,3 +529,4 @@ class _DriversScreenState extends State<DriversScreen> {
     );
   }
 }
+
