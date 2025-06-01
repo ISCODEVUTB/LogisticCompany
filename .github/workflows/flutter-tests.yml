@@ -41,12 +41,14 @@ jobs:
             if ! grep -q "FlutterActivity" "$MAIN_ACTIVITY_PATH"; then
               # Si no usa FlutterActivity, reemplazar con la implementación correcta
               mkdir -p $(dirname "$MAIN_ACTIVITY_PATH")
-              echo "package com.example.logistic_app
+              cat > "$MAIN_ACTIVITY_PATH" << 'EOF'
+          package com.example.logistic_app
           import io.flutter.embedding.android.FlutterActivity
           class MainActivity: FlutterActivity() {
-          }" > "$MAIN_ACTIVITY_PATH"
-            fi
-          fi
+          }
+          EOF
+                      fi
+                    fi
       
       - name: Clean and Update Dependencies
         run: |
