@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class RoutesScreen extends StatefulWidget {
-  const RoutesScreen({Key? key} ) : super(key: key);
+  const RoutesScreen({super.key} );
   
   @override
   State<RoutesScreen> createState() => _RoutesScreenState();
@@ -521,49 +521,68 @@ class _RoutesScreenState extends State<RoutesScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.all(16),
-                              leading: CircleAvatar(
-                                backgroundColor: _getStatusColor(route['status']),
-                                child: const Icon(Icons.route, color: Colors.white),
-                              ),
-                              title: Text(
-                                route['name'],
-                                style: const TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 4),
-                                  Text('Conductor: ${route['driver']}'),
-                                  const SizedBox(height: 4),
-                                  Row(
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  contentPadding: const EdgeInsets.all(16),
+                                  title: Text(
+                                    route['name'],
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                        decoration: BoxDecoration(
-                                          color: _getStatusColor(route['status']).withOpacity(0.2),
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        child: Text(
-                                          route['status'],
-                                          style: TextStyle(
-                                            color: _getStatusColor(route['status']),
-                                            fontWeight: FontWeight.bold,
+                                      const SizedBox(height: 4),
+                                      Text('Conductor: ${route['driver']} | Vehículo: ${route['vehicle']}'),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: _getStatusColor(route['status']).withOpacity(0.2),
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            child: Text(
+                                              route['status'],
+                                              style: TextStyle(
+                                                color: _getStatusColor(route['status']),
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                          const SizedBox(width: 8),
+                                          Text('Salida: ${_formatDateTime(route['departureTime'])}'),
+                                        ],
                                       ),
-                                      const SizedBox(width: 8),
-                                      Text('Progreso: ${route['progress']}%'),
                                     ],
                                   ),
-                                ],
-                              ),
-                              trailing: IconButton(
-                                icon: const Icon(Icons.arrow_forward_ios),
-                                onPressed: () => _showRouteDetails(route),
-                              ),
-                              onTap: () => _showRouteDetails(route),
+                                  trailing: IconButton(
+                                    icon: const Icon(Icons.arrow_forward_ios),
+                                    onPressed: () => _showRouteDetails(route),
+                                  ),
+                                  onTap: () => _showRouteDetails(route),
+                                ),
+                                if (route['status'] == 'Activa')
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const Text('Progreso:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                        const SizedBox(height: 4),
+                                        LinearProgressIndicator(
+                                          value: route['progress'] / 100,
+                                          backgroundColor: Colors.grey[300],
+                                          valueColor: AlwaysStoppedAnimation<Color>(_getStatusColor(route['status'])),
+                                          minHeight: 8,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text('${route['progress']}%'),
+                                      ],
+                                    ),
+                                  ),
+                              ],
                             ),
                           );
                         },
@@ -583,4 +602,3 @@ class _RoutesScreenState extends State<RoutesScreen> {
   }
 }
 
-}
