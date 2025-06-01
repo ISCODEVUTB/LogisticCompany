@@ -3,8 +3,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({Key? key} ) : super(key: key);
+  
   @override
-  _DashboardScreenState createState( ) => _DashboardScreenState();
+  State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
@@ -38,7 +40,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         });
       }
     } catch (e) {
-      print('Error al cargar datos: $e');
+      // Usar un sistema de logging en lugar de print
+      debugPrint('Error al cargar datos: $e');
       // Usar datos de muestra en caso de error
     }
   }
@@ -54,12 +57,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Panel de Gestión Logística'),
+        title: const Text('Panel de Gestión Logística'),
         backgroundColor: Colors.blueGrey[700],
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Center(child: Text("Usuario: $adminUser", style: TextStyle(fontWeight: FontWeight.bold))),
+            child: Center(
+              child: Text(
+                "Usuario: $adminUser", 
+                style: const TextStyle(fontWeight: FontWeight.bold)
+              )
+            ),
           )
         ],
       ),
@@ -116,7 +124,11 @@ class NavigationPanel extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
 
-  NavigationPanel({required this.selectedIndex, required this.onItemTapped});
+  const NavigationPanel({
+    Key? key,
+    required this.selectedIndex, 
+    required this.onItemTapped
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +141,7 @@ class NavigationPanel extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.grey.shade300,
             ),
-            child: Text(
+            child: const Text(
               'Menú',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
@@ -145,7 +157,10 @@ class NavigationPanel extends StatelessWidget {
 
   Widget _buildNavItem(int index, IconData icon, String title) {
     return ListTile(
-      leading: Icon(icon, color: selectedIndex == index ? Colors.blueGrey[700] : Colors.grey[600]),
+      leading: Icon(
+        icon, 
+        color: selectedIndex == index ? Colors.blueGrey[700] : Colors.grey[600]
+      ),
       title: Text(
         title,
         style: TextStyle(
@@ -166,13 +181,14 @@ class InfoCard extends StatelessWidget {
   final Color color;
   final Color iconColor;
 
-  InfoCard({
+  const InfoCard({
+    Key? key,
     required this.title, 
     required this.content, 
     required this.icon,
     required this.color,
     required this.iconColor,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -193,11 +209,11 @@ class InfoCard extends StatelessWidget {
             Row(
               children: [
                 Icon(icon, size: 40, color: iconColor),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     title,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 20, 
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
@@ -206,11 +222,11 @@ class InfoCard extends StatelessWidget {
                 ),
               ],
             ),
-            Divider(color: Colors.black45),
+            const Divider(color: Colors.black45),
             Expanded(
               child: Text(
                 content, 
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   height: 1.5,
                 ),
@@ -222,3 +238,4 @@ class InfoCard extends StatelessWidget {
     );
   }
 }
+
