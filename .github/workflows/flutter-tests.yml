@@ -31,14 +31,6 @@ jobs:
           # Verificar contenido actual del pubspec.yaml
           cat pubspec.yaml
           
-          # Forzar resolución de dependencias con override
-          echo "" >> pubspec.yaml
-          echo "dependency_overrides:" >> pubspec.yaml
-          echo "  test_coverage: ^0.5.0" >> pubspec.yaml
-          
-          # Verificar que los cambios se aplicaron
-          cat pubspec.yaml
-          
           # Limpiar caché y actualizar dependencias
           flutter pub cache clean
           rm -f pubspec.lock
