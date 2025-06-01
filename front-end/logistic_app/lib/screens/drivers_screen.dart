@@ -523,8 +523,8 @@ class _DriversScreenState extends State<DriversScreen> {
           // Implementar creación de nuevo conductor
         },
         backgroundColor: Colors.blueGrey[700],
-        child: const Icon(Icons.add),
         tooltip: 'Nuevo conductor',
+        child: const Icon(Icons.add),
       ),
     );
   }
