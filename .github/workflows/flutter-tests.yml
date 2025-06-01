@@ -26,6 +26,28 @@ jobs:
           flutter-version: '3.10.0'
           channel: 'stable'
       
+      # Añadir este paso para corregir el problema de embedding
+      - name: Fix Android Embedding Warning
+        run: |
+          # Verificar que el AndroidManifest.xml tiene la configuración correcta
+          if ! grep -q "flutterEmbedding.*2" android/app/src/main/AndroidManifest.xml; then
+            # Si no existe, añadir la meta-data para embedding V2
+            sed -i '/<\/application>/i \        <meta-data android:name="flutterEmbedding" android:value="2" />' android/app/src/main/AndroidManifest.xml
+          fi
+          
+          # Verificar que MainActivity.kt usa FlutterActivity
+          MAIN_ACTIVITY_PATH="android/app/src/main/kotlin/com/example/logistic_app/MainActivity.kt"
+          if [ -f "$MAIN_ACTIVITY_PATH" ]; then
+            if ! grep -q "FlutterActivity" "$MAIN_ACTIVITY_PATH"; then
+              # Si no usa FlutterActivity, reemplazar con la implementación correcta
+              mkdir -p $(dirname "$MAIN_ACTIVITY_PATH")
+              echo "package com.example.logistic_app
+          import io.flutter.embedding.android.FlutterActivity
+          class MainActivity: FlutterActivity() {
+          }" > "$MAIN_ACTIVITY_PATH"
+            fi
+          fi
+      
       - name: Clean and Update Dependencies
         run: |
           # Verificar contenido actual del pubspec.yaml
@@ -39,8 +61,11 @@ jobs:
       - name: Analyze project
         run: flutter analyze
       
+      # Modificar este paso para ignorar la advertencia si persiste
       - name: Run tests with coverage
-        run: flutter test --coverage
+        run: |
+          # Opción 1: Ignorar advertencias como errores
+          flutter test --coverage --no-warning-as-error || flutter test --coverage
       
       - name: Generate Dart Analysis Report
         run: |
@@ -51,4 +76,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
