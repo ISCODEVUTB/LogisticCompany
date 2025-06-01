@@ -1,15 +1,13 @@
-// En backend_integration_test.dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
 // Generar el mock
-@GenerateMocks([http.Client] )
+@GenerateMocks([http.Client])
+import 'backend_integration_test.mocks.dart';
+
 void main() {
-  // Después de ejecutar build_runner, descomenta esta línea:
- import 'backend_integration_test.mocks.dart';
-  
   late MockClient mockClient;
   
   setUp(() {
@@ -24,7 +22,7 @@ void main() {
             {"id": "1", "client": "Cliente A", "origin": "Cartagena", "destination": "Barranquilla", "status": "En tránsito"},
             {"id": "2", "client": "Cliente B", "origin": "Bogotá", "destination": "Medellín", "status": "Entregado"}
           ]
-        ''', 200 ));
+        ''', 200));
     
     // Construir app con cliente HTTP mockeado
     // Aquí necesitarías una forma de inyectar el mockClient en tu app
@@ -40,4 +38,3 @@ void main() {
     expect(find.text('Entregado'), findsOneWidget);
   });
 }
-
