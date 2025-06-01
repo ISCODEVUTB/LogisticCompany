@@ -8,7 +8,7 @@ class TrackingScreen extends StatefulWidget {
   const TrackingScreen({Key? key, this.orderId} ) : super(key: key);
 
   @override
-  _TrackingScreenState createState() => _TrackingScreenState();
+  State<TrackingScreen> createState() => _TrackingScreenState();
 }
 
 class _TrackingScreenState extends State<TrackingScreen> {
@@ -40,7 +40,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
       // Intenta obtener datos del backend
       final response = await http.get(
         Uri.parse('http://localhost:8000/api/tracking/$orderId' ),
-      ).timeout(Duration(seconds: 5));
+      ).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
         setState(() {
@@ -120,18 +120,109 @@ class _TrackingScreenState extends State<TrackingScreen> {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'entregado':
+        return Colors.green;
+      case 'en tránsito':
+        return Colors.blue;
+      case 'en preparación':
+        return Colors.purple;
+      case 'enviado':
+        return Colors.orange;
+      case 'pedido recibido':
+        return Colors.teal;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 20, color: Colors.blueGrey),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 100,
+            child: Text(
+              '$label:',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(
+            child: Text(value),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEventCard(Map<String, dynamic> event) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: _getStatusColor(event['status']).withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    event['status'],
+                    style: TextStyle(
+                      color: _getStatusColor(event['status']),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  _formatDateTime(event['timestamp']),
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              event['location'],
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            Text(event['description']),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Seguimiento de Pedido'),
+        title: const Text('Seguimiento de Pedido'),
         backgroundColor: Colors.blueGrey[700],
       ),
       body: Column(
         children: [
           // Barra de búsqueda
           Container(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             color: Colors.grey[100],
             child: Row(
               children: [
@@ -140,7 +231,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
                     controller: searchController,
                     decoration: InputDecoration(
                       hintText: 'Ingrese número de pedido...',
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -149,18 +240,18 @@ class _TrackingScreenState extends State<TrackingScreen> {
                     ),
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 ElevatedButton(
                   onPressed: () {
                     if (searchController.text.isNotEmpty) {
                       fetchTrackingData(searchController.text);
                     }
                   },
-                  child: Text('Buscar'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueGrey,
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
+                  child: const Text('Buscar'),
                 ),
               ],
             ),
@@ -169,15 +260,15 @@ class _TrackingScreenState extends State<TrackingScreen> {
           // Mensaje de error si existe
           if (errorMessage.isNotEmpty)
             Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               color: Colors.amber[100],
               child: Row(
                 children: [
                   Icon(Icons.warning, color: Colors.amber[800]),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Expanded(child: Text(errorMessage)),
                   IconButton(
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                     onPressed: () {
                       setState(() {
                         errorMessage = '';
@@ -191,14 +282,14 @@ class _TrackingScreenState extends State<TrackingScreen> {
           // Contenido principal
           Expanded(
             child: isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : trackingData == null
                     ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.search, size: 80, color: Colors.grey),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             Text(
                               'Ingrese un número de pedido para rastrear',
                               style: TextStyle(fontSize: 18, color: Colors.grey[600]),
@@ -207,7 +298,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
                         ),
                       )
                     : SingleChildScrollView(
-                        padding: EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(16),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -218,7 +309,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Padding(
-                                padding: EdgeInsets.all(16),
+                                padding: const EdgeInsets.all(16),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -227,13 +318,13 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                       children: [
                                         Text(
                                           'Pedido ${trackingData!['orderId']}',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                         Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                           decoration: BoxDecoration(
                                             color: _getStatusColor(trackingData!['status']).withOpacity(0.2),
                                             borderRadius: BorderRadius.circular(20),
@@ -248,7 +339,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                         ),
                                       ],
                                     ),
-                                    Divider(height: 24),
+                                    const Divider(height: 24),
                                     _buildInfoRow(Icons.person, 'Cliente', trackingData!['customer']),
                                     _buildInfoRow(Icons.location_on, 'Origen', trackingData!['origin']),
                                     _buildInfoRow(Icons.flag, 'Destino', trackingData!['destination']),
@@ -259,24 +350,24 @@ class _TrackingScreenState extends State<TrackingScreen> {
                               ),
                             ),
                             
-                            SizedBox(height: 24),
+                            const SizedBox(height: 24),
                             
                             // Información del conductor
-                            Text(
+                            const Text(
                               'Información del Conductor',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Card(
                               elevation: 3,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Padding(
-                                padding: EdgeInsets.all(16),
+                                padding: const EdgeInsets.all(16),
                                 child: Column(
                                   children: [
                                     Row(
@@ -290,30 +381,30 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                             color: Colors.blueGrey[700],
                                           ),
                                         ),
-                                        SizedBox(width: 16),
+                                        const SizedBox(width: 16),
                                         Expanded(
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Text(
                                                 trackingData!['driver']['name'],
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                              SizedBox(height: 4),
+                                              const SizedBox(height: 4),
                                               Text(
                                                 trackingData!['driver']['vehicle'],
                                                 style: TextStyle(
                                                   color: Colors.grey[600],
                                                 ),
                                               ),
-                                              SizedBox(height: 4),
+                                              const SizedBox(height: 4),
                                               Row(
                                                 children: [
-                                                  Icon(Icons.phone, size: 16, color: Colors.green),
-                                                  SizedBox(width: 4),
+                                                  const Icon(Icons.phone, size: 16, color: Colors.green),
+                                                  const SizedBox(width: 4),
                                                   Text(trackingData!['driver']['phone']),
                                                 ],
                                               ),
@@ -321,8 +412,8 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                           ),
                                         ),
                                         ElevatedButton.icon(
-                                          icon: Icon(Icons.message),
-                                          label: Text('Contactar'),
+                                          icon: const Icon(Icons.message),
+                                          label: const Text('Contactar'),
                                           onPressed: () {
                                             // Implementar contacto
                                           },
@@ -337,17 +428,17 @@ class _TrackingScreenState extends State<TrackingScreen> {
                               ),
                             ),
                             
-                            SizedBox(height: 24),
+                            const SizedBox(height: 24),
                             
                             // Mapa (simulado)
-                            Text(
+                            const Text(
                               'Ubicación del Envío',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Container(
                               height: 200,
                               width: double.infinity,
@@ -360,12 +451,12 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(Icons.map, size: 48, color: Colors.grey[600]),
-                                    SizedBox(height: 8),
+                                    const SizedBox(height: 8),
                                     Text(
                                       'Mapa de ubicación',
                                       style: TextStyle(color: Colors.grey[600]),
                                     ),
-                                    SizedBox(height: 8),
+                                    const SizedBox(height: 8),
                                     Text(
                                       'Lat: ${trackingData!['map']['currentLatitude']}, Long: ${trackingData!['map']['currentLongitude']}',
                                       style: TextStyle(color: Colors.grey[600], fontSize: 12),
@@ -375,91 +466,20 @@ class _TrackingScreenState extends State<TrackingScreen> {
                               ),
                             ),
                             
-                            SizedBox(height: 24),
+                            const SizedBox(height: 24),
                             
                             // Historial de eventos
-                            Text(
-                              'Historial de Seguimiento',
+                            const Text(
+                              'Historial de Eventos',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 8),
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: trackingData!['events'].length,
-                              itemBuilder: (context, index) {
-                                final event = trackingData!['events'][index];
-                                final isLast = index == 0;
-                                final isFirst = index == trackingData!['events'].length - 1;
-                                
-                                return Container(
-                                  margin: EdgeInsets.only(left: 8),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Column(
-                                        children: [
-                                          Container(
-                                            width: 20,
-                                            height: 20,
-                                            decoration: BoxDecoration(
-                                              color: isLast ? Colors.green : Colors.grey,
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                color: Colors.white,
-                                                width: 3,
-                                              ),
-                                            ),
-                                          ),
-                                          if (!isFirst)
-                                            Container(
-                                              width: 2,
-                                              height: 70,
-                                              color: Colors.grey[300],
-                                            ),
-                                        ],
-                                      ),
-                                      SizedBox(width: 16),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              _formatDateTime(event['timestamp']),
-                                              style: TextStyle(
-                                                color: Colors.grey[600],
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                            SizedBox(height: 4),
-                                            Text(
-                                              event['status'],
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
-                                                color: isLast ? Colors.green : Colors.black87,
-                                              ),
-                                            ),
-                                            SizedBox(height: 4),
-                                            Text(event['location']),
-                                            SizedBox(height: 4),
-                                            Text(
-                                              event['description'],
-                                              style: TextStyle(
-                                                color: Colors.grey[600],
-                                              ),
-                                            ),
-                                            SizedBox(height: 16),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
+                            const SizedBox(height: 8),
+                            ...List.generate(
+                              trackingData!['events'].length,
+                              (index) => _buildEventCard(trackingData!['events'][index]),
                             ),
                           ],
                         ),
@@ -468,50 +488,5 @@ class _TrackingScreenState extends State<TrackingScreen> {
         ],
       ),
     );
-  }
-
-  Widget _buildInfoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 20, color: Colors.blueGrey),
-          SizedBox(width: 8),
-          SizedBox(
-            width: 100,
-            child: Text(
-              '$label:',
-              style: TextStyle(
-                color: Colors.grey[600],
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'entregado':
-        return Colors.green;
-      case 'en tránsito':
-        return Colors.blue;
-      case 'pendiente':
-        return Colors.orange;
-      case 'en preparación':
-        return Colors.purple;
-      default:
-        return Colors.grey;
-    }
   }
 }
