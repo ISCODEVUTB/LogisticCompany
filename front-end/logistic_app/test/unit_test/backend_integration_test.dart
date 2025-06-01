@@ -1,11 +1,14 @@
+// En backend_integration_test.dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
+import 'package:mockito/annotations.dart';
 
-// Mock para HTTP Client
-class MockClient extends Mock implements http.Client {}
+// Generar el mock
+@GenerateMocks([http.Client] )
+import 'backend_integration_test.mocks.dart';
 
-void main( ) {
+void main() {
   late MockClient mockClient;
   
   setUp(() {
@@ -13,8 +16,8 @@ void main( ) {
   });
   
   testWidgets('Carga datos de pedidos desde API', (WidgetTester tester) async {
-    // Configurar respuesta mock
-    when(mockClient.get(Uri.parse('https://api.example.com/orders' )))
+    // Configurar respuesta mock CORRECTAMENTE
+    when(mockClient.get(any))
         .thenAnswer((_) async => http.Response('''
           [
             {"id": "1", "client": "Cliente A", "origin": "Cartagena", "destination": "Barranquilla", "status": "En tránsito"},
