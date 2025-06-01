@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class OrdersScreen extends StatefulWidget {
+  const OrdersScreen({Key? key} ) : super(key: key);
+  
   @override
-  _OrdersScreenState createState( ) => _OrdersScreenState();
+  State<OrdersScreen> createState() => _OrdersScreenState();
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
@@ -27,7 +29,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       // Intenta obtener datos del backend
       final response = await http.get(
         Uri.parse('http://localhost:8000/api/orders' ),
-      ).timeout(Duration(seconds: 5));
+      ).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
         setState(() {
@@ -131,7 +133,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Detalles del Pedido ${order['id']}'),
-        content: Container(
+        content: SizedBox(
           width: double.maxFinite,
           child: SingleChildScrollView(
             child: Column(
@@ -146,15 +148,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 _buildDetailRow('Total', '\$${order['total']}'),
                 _buildDetailRow('Conductor', order['driver']),
                 _buildDetailRow('Entrega estimada', order['estimatedDelivery']),
-                SizedBox(height: 20),
-                Text('Acciones', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                SizedBox(height: 10),
+                const SizedBox(height: 20),
+                const Text('Acciones', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton.icon(
-                      icon: Icon(Icons.edit),
-                      label: Text('Editar'),
+                      icon: const Icon(Icons.edit),
+                      label: const Text('Editar'),
                       onPressed: () {
                         Navigator.pop(context);
                         // Aquí iría la navegación a la pantalla de edición
@@ -164,8 +166,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       ),
                     ),
                     ElevatedButton.icon(
-                      icon: Icon(Icons.location_on),
-                      label: Text('Rastrear'),
+                      icon: const Icon(Icons.location_on),
+                      label: const Text('Rastrear'),
                       onPressed: () {
                         Navigator.pop(context);
                         // Aquí iría la navegación a la pantalla de tracking
@@ -183,7 +185,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cerrar'),
+            child: const Text('Cerrar'),
           ),
         ],
       ),
@@ -200,7 +202,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
             width: 120,
             child: Text(
               '$label:',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           Expanded(
@@ -218,11 +220,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Gestión de Pedidos'),
+        title: const Text('Gestión de Pedidos'),
         backgroundColor: Colors.blueGrey[700],
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: fetchOrders,
             tooltip: 'Actualizar pedidos',
           ),
@@ -232,7 +234,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
         children: [
           // Barra de búsqueda y filtros
           Container(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             color: Colors.grey[100],
             child: Row(
               children: [
@@ -240,7 +242,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   child: TextField(
                     decoration: InputDecoration(
                       hintText: 'Buscar pedidos...',
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -249,16 +251,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     ),
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 ElevatedButton.icon(
-                  icon: Icon(Icons.filter_list),
-                  label: Text('Filtros'),
+                  icon: const Icon(Icons.filter_list),
+                  label: const Text('Filtros'),
                   onPressed: () {
                     // Implementar filtros
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueGrey,
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
                 ),
               ],
@@ -268,15 +270,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
           // Mensaje de error si existe
           if (errorMessage.isNotEmpty)
             Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               color: Colors.amber[100],
               child: Row(
                 children: [
                   Icon(Icons.warning, color: Colors.amber[800]),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Expanded(child: Text(errorMessage)),
                   IconButton(
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                     onPressed: () {
                       setState(() {
                         errorMessage = '';
@@ -290,42 +292,42 @@ class _OrdersScreenState extends State<OrdersScreen> {
           // Lista de pedidos
           Expanded(
             child: isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : orders.isEmpty
-                    ? Center(child: Text('No hay pedidos disponibles'))
+                    ? const Center(child: Text('No hay pedidos disponibles'))
                     : ListView.builder(
                         itemCount: orders.length,
                         itemBuilder: (context, index) {
                           final order = orders[index];
                           return Card(
-                            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             elevation: 3,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: ListTile(
-                              contentPadding: EdgeInsets.all(16),
+                              contentPadding: const EdgeInsets.all(16),
                               leading: CircleAvatar(
                                 backgroundColor: _getStatusColor(order['status']),
                                 child: Text(
                                   order['id'].substring(order['id'].length - 2),
-                                  style: TextStyle(color: Colors.white),
+                                  style: const TextStyle(color: Colors.white),
                                 ),
                               ),
                               title: Text(
                                 '${order['id']} - ${order['customer']}',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(fontWeight: FontWeight.bold),
                               ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  SizedBox(height: 4),
+                                  const SizedBox(height: 4),
                                   Text('Destino: ${order['destination']}'),
-                                  SizedBox(height: 4),
+                                  const SizedBox(height: 4),
                                   Row(
                                     children: [
                                       Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                         decoration: BoxDecoration(
                                           color: _getStatusColor(order['status']).withOpacity(0.2),
                                           borderRadius: BorderRadius.circular(12),
@@ -338,14 +340,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(width: 8),
+                                      const SizedBox(width: 8),
                                       Text('Entrega: ${order['estimatedDelivery']}'),
                                     ],
                                   ),
                                 ],
                               ),
                               trailing: IconButton(
-                                icon: Icon(Icons.arrow_forward_ios),
+                                icon: const Icon(Icons.arrow_forward_ios),
                                 onPressed: () => _showOrderDetails(order),
                               ),
                               onTap: () => _showOrderDetails(order),
@@ -361,7 +363,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
           // Implementar creación de nuevo pedido
         },
         backgroundColor: Colors.blueGrey[700],
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         tooltip: 'Nuevo pedido',
       ),
     );
