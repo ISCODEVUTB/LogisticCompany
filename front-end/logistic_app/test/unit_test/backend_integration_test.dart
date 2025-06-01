@@ -6,9 +6,10 @@ import 'package:mockito/annotations.dart';
 
 // Generar el mock
 @GenerateMocks([http.Client] )
-import 'backend_integration_test.mocks.dart';
-
 void main() {
+  // Después de ejecutar build_runner, descomenta esta línea:
+ import 'backend_integration_test.mocks.dart';
+  
   late MockClient mockClient;
   
   setUp(() {
@@ -39,3 +40,4 @@ void main() {
     expect(find.text('Entregado'), findsOneWidget);
   });
 }
+
