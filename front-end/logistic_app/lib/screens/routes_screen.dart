@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class RoutesScreen extends StatefulWidget {
+  const RoutesScreen({Key? key} ) : super(key: key);
+  
   @override
-  _RoutesScreenState createState( ) => _RoutesScreenState();
+  State<RoutesScreen> createState() => _RoutesScreenState();
 }
 
 class _RoutesScreenState extends State<RoutesScreen> {
@@ -28,7 +30,7 @@ class _RoutesScreenState extends State<RoutesScreen> {
       // Intenta obtener datos del backend
       final response = await http.get(
         Uri.parse('http://localhost:8000/api/routes' ),
-      ).timeout(Duration(seconds: 5));
+      ).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
         setState(() {
@@ -174,8 +176,8 @@ class _RoutesScreenState extends State<RoutesScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Detalles de la Ruta'),
-        content: Container(
+        title: const Text('Detalles de la Ruta'),
+        content: SizedBox(
           width: double.maxFinite,
           child: SingleChildScrollView(
             child: Column(
@@ -184,14 +186,14 @@ class _RoutesScreenState extends State<RoutesScreen> {
               children: [
                 Text(
                   route['name'],
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     color: _getStatusColor(route['status']).withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
@@ -204,8 +206,8 @@ class _RoutesScreenState extends State<RoutesScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
-                Divider(),
+                const SizedBox(height: 20),
+                const Divider(),
                 _buildDetailRow('ID', route['id']),
                 _buildDetailRow('Conductor', route['driver']),
                 _buildDetailRow('Vehículo', route['vehicle']),
@@ -218,22 +220,22 @@ class _RoutesScreenState extends State<RoutesScreen> {
                 _buildDetailRow('Paradas', route['stops'].toString()),
                 _buildDetailRow('Pedidos', route['orders'].join(', ')),
                 
-                SizedBox(height: 20),
-                Text('Progreso de la Ruta', style: TextStyle(fontWeight: FontWeight.bold)),
-                SizedBox(height: 8),
+                const SizedBox(height: 20),
+                const Text('Progreso de la Ruta', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
                 LinearProgressIndicator(
                   value: route['progress'] / 100,
                   backgroundColor: Colors.grey[300],
                   valueColor: AlwaysStoppedAnimation<Color>(_getStatusColor(route['status'])),
                   minHeight: 10,
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text('${route['progress']}%'),
                 
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 if (route['currentLocation'] != null) ...[
-                  Text('Ubicación Actual', style: TextStyle(fontWeight: FontWeight.bold)),
-                  SizedBox(height: 8),
+                  const Text('Ubicación Actual', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
                   Container(
                     height: 150,
                     width: double.infinity,
@@ -246,17 +248,17 @@ class _RoutesScreenState extends State<RoutesScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.map, size: 48, color: Colors.grey[600]),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Text(
                             'Mapa de ubicación',
                             style: TextStyle(color: Colors.grey[600]),
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Text(
                             'Lat: ${route['currentLocation']['latitude']}, Long: ${route['currentLocation']['longitude']}',
                             style: TextStyle(color: Colors.grey[600], fontSize: 12),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(
                             'Última actualización: ${_formatDateTime(route['currentLocation']['lastUpdate'])}',
                             style: TextStyle(color: Colors.grey[600], fontSize: 12),
@@ -267,15 +269,15 @@ class _RoutesScreenState extends State<RoutesScreen> {
                   ),
                 ],
                 
-                SizedBox(height: 20),
-                Text('Acciones', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                SizedBox(height: 10),
+                const SizedBox(height: 20),
+                const Text('Acciones', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton.icon(
-                      icon: Icon(Icons.edit),
-                      label: Text('Editar'),
+                      icon: const Icon(Icons.edit),
+                      label: const Text('Editar'),
                       onPressed: () {
                         Navigator.pop(context);
                         // Aquí iría la navegación a la pantalla de edición
@@ -285,8 +287,8 @@ class _RoutesScreenState extends State<RoutesScreen> {
                       ),
                     ),
                     ElevatedButton.icon(
-                      icon: Icon(Icons.map),
-                      label: Text('Ver Mapa'),
+                      icon: const Icon(Icons.map),
+                      label: const Text('Ver Mapa'),
                       onPressed: () {
                         Navigator.pop(context);
                         // Aquí iría la navegación a la pantalla de mapa
@@ -304,7 +306,7 @@ class _RoutesScreenState extends State<RoutesScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cerrar'),
+            child: const Text('Cerrar'),
           ),
         ],
       ),
@@ -321,7 +323,7 @@ class _RoutesScreenState extends State<RoutesScreen> {
             width: 120,
             child: Text(
               '$label:',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           Expanded(
@@ -340,17 +342,67 @@ class _RoutesScreenState extends State<RoutesScreen> {
     }
   }
 
+  Widget _buildFilterChip(String status) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: FilterChip(
+        label: Text(status),
+        selected: filterStatus == status,
+        onSelected: (selected) {
+          setState(() {
+            filterStatus = status;
+          });
+        },
+        backgroundColor: Colors.grey[200],
+        selectedColor: Colors.blueGrey[100],
+        checkmarkColor: Colors.blueGrey[700],
+      ),
+    );
+  }
+
+  Widget _buildStatCard(String title, String value, Color color) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final filteredRoutes = _getFilteredRoutes();
     
     return Scaffold(
       appBar: AppBar(
-        title: Text('Gestión de Rutas'),
+        title: const Text('Gestión de Rutas'),
         backgroundColor: Colors.blueGrey[700],
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: fetchRoutes,
             tooltip: 'Actualizar rutas',
           ),
@@ -360,7 +412,7 @@ class _RoutesScreenState extends State<RoutesScreen> {
         children: [
           // Barra de búsqueda y filtros
           Container(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             color: Colors.grey[100],
             child: Column(
               children: [
@@ -370,7 +422,7 @@ class _RoutesScreenState extends State<RoutesScreen> {
                       child: TextField(
                         decoration: InputDecoration(
                           hintText: 'Buscar rutas...',
-                          prefixIcon: Icon(Icons.search),
+                          prefixIcon: const Icon(Icons.search),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -379,21 +431,21 @@ class _RoutesScreenState extends State<RoutesScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     ElevatedButton.icon(
-                      icon: Icon(Icons.filter_list),
-                      label: Text('Filtros'),
+                      icon: const Icon(Icons.filter_list),
+                      label: const Text('Filtros'),
                       onPressed: () {
                         // Implementar filtros adicionales
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueGrey,
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -413,15 +465,15 @@ class _RoutesScreenState extends State<RoutesScreen> {
           // Mensaje de error si existe
           if (errorMessage.isNotEmpty)
             Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               color: Colors.amber[100],
               child: Row(
                 children: [
                   Icon(Icons.warning, color: Colors.amber[800]),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Expanded(child: Text(errorMessage)),
                   IconButton(
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                     onPressed: () {
                       setState(() {
                         errorMessage = '';
@@ -456,33 +508,39 @@ class _RoutesScreenState extends State<RoutesScreen> {
           // Lista de rutas
           Expanded(
             child: isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : filteredRoutes.isEmpty
-                    ? Center(child: Text('No hay rutas disponibles'))
+                    ? const Center(child: Text('No hay rutas disponibles'))
                     : ListView.builder(
                         itemCount: filteredRoutes.length,
                         itemBuilder: (context, index) {
                           final route = filteredRoutes[index];
                           return Card(
-                            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             elevation: 3,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Column(
-                              children: [
-                                ListTile(
-                                  contentPadding: EdgeInsets.all(16),
-                                  title: Row(
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.all(16),
+                              leading: CircleAvatar(
+                                backgroundColor: _getStatusColor(route['status']),
+                                child: const Icon(Icons.route, color: Colors.white),
+                              ),
+                              title: Text(
+                                route['name'],
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 4),
+                                  Text('Conductor: ${route['driver']}'),
+                                  const SizedBox(height: 4),
+                                  Row(
                                     children: [
-                                      Expanded(
-                                        child: Text(
-                                          route['name'],
-                                          style: TextStyle(fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
                                       Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                         decoration: BoxDecoration(
                                           color: _getStatusColor(route['status']).withOpacity(0.2),
                                           borderRadius: BorderRadius.circular(12),
@@ -495,59 +553,17 @@ class _RoutesScreenState extends State<RoutesScreen> {
                                           ),
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                  subtitle: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          Icon(Icons.person, size: 16, color: Colors.grey),
-                                          SizedBox(width: 4),
-                                          Text(route['driver']),
-                                          SizedBox(width: 16),
-                                          Icon(Icons.local_shipping, size: 16, color: Colors.grey),
-                                          SizedBox(width: 4),
-                                          Text(route['vehicle'].split(' - ')[0]),
-                                        ],
-                                      ),
-                                      SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          Icon(Icons.location_on, size: 16, color: Colors.grey),
-                                          SizedBox(width: 4),
-                                          Expanded(child: Text('${route['startLocation']} → ${route['endLocation']}')),
-                                        ],
-                                      ),
-                                      SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          Icon(Icons.schedule, size: 16, color: Colors.grey),
-                                          SizedBox(width: 4),
-                                          Text(_formatDateTime(route['departureTime'])),
-                                          Text(' - '),
-                                          Text(_formatDateTime(route['arrivalTime'])),
-                                        ],
-                                      ),
-                                      SizedBox(height: 8),
-                                      LinearProgressIndicator(
-                                        value: route['progress'] / 100,
-                                        backgroundColor: Colors.grey[300],
-                                        valueColor: AlwaysStoppedAnimation<Color>(_getStatusColor(route['status'])),
-                                        minHeight: 6,
-                                      ),
-                                      SizedBox(height: 4),
+                                      const SizedBox(width: 8),
                                       Text('Progreso: ${route['progress']}%'),
                                     ],
                                   ),
-                                  trailing: IconButton(
-                                    icon: Icon(Icons.arrow_forward_ios),
-                                    onPressed: () => _showRouteDetails(route),
-                                  ),
-                                  onTap: () => _showRouteDetails(route),
-                                ),
-                              ],
+                                ],
+                              ),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.arrow_forward_ios),
+                                onPressed: () => _showRouteDetails(route),
+                              ),
+                              onTap: () => _showRouteDetails(route),
                             ),
                           );
                         },
@@ -560,63 +576,11 @@ class _RoutesScreenState extends State<RoutesScreen> {
           // Implementar creación de nueva ruta
         },
         backgroundColor: Colors.blueGrey[700],
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         tooltip: 'Nueva ruta',
       ),
     );
   }
+}
 
-  Widget _buildFilterChip(String status) {
-    final isSelected = filterStatus == status;
-    
-    return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
-      child: FilterChip(
-        label: Text(status),
-        selected: isSelected,
-        onSelected: (selected) {
-          setState(() {
-            filterStatus = status;
-          });
-        },
-        backgroundColor: Colors.white,
-        selectedColor: Colors.blueGrey[100],
-        checkmarkColor: Colors.blueGrey[700],
-        labelStyle: TextStyle(
-          color: isSelected ? Colors.blueGrey[700] : Colors.black,
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatCard(String title, String value, Color color) {
-    return Container(
-      width: 100,
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
-          SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.grey[700],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
