@@ -5,7 +5,7 @@ import 'package:logistic_company_web/homepage.dart';
 void main() {
   testWidgets('Dashboard screen renders correctly', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MaterialApp(home: DashboardScreen()));
+    await tester.pumpWidget(const MaterialApp(home: DashboardScreen()));
 
     // Verify that the title is displayed
     expect(find.text('Panel de Gestión Logística'), findsOneWidget);
