@@ -11,7 +11,7 @@ void main( ) {
 }
 
 class LogisticDashboardApp extends StatelessWidget {
-  const LogisticDashboardApp({Key? key}) : super(key: key);
+  const LogisticDashboardApp({super.key});
   
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class LogisticDashboardApp extends StatelessWidget {
 }
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
   
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -173,10 +173,10 @@ class NavigationPanel extends StatelessWidget {
   final Function(int) onItemTapped;
 
   const NavigationPanel({
-    Key? key,
+    super.key,
     required this.selectedIndex, 
     required this.onItemTapped
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -258,14 +258,14 @@ class InfoCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   const InfoCard({
-    Key? key,
+    super.key,
     required this.title, 
     required this.content, 
     required this.icon,
     required this.color,
     required this.iconColor,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -319,3 +319,4 @@ class InfoCard extends StatelessWidget {
     );
   }
 }
+
