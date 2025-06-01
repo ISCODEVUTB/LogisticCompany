@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:logistic_company_web/main.dart';
-import 'package:mockito/mockito.dart';
-// Importar los mocks necesarios
 
 void main() {
   testWidgets('Flujo completo de creación de pedido', (WidgetTester tester) async {
