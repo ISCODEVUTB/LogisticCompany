@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class RoutesScreen extends StatefulWidget {
-  const RoutesScreen({super.key} );
+  final http.Client? client;
+  const RoutesScreen({super.key, this.client});
   
   @override
   State<RoutesScreen> createState() => _RoutesScreenState();
@@ -28,13 +29,16 @@ class _RoutesScreenState extends State<RoutesScreen> {
 
     try {
       // Intenta obtener datos del backend
-      final response = await http.get(
-        Uri.parse('http://localhost:8000/api/routes' ),
-      ).timeout(const Duration(seconds: 5));
+      final response = widget.client != null
+          ? await widget.client!.get(Uri.parse('http://localhost:8000/api/routes'))
+          : await http.get(Uri.parse('http://localhost:8000/api/routes'));
+      // Note: Timeout handling for injected client is simplified.
 
       if (response.statusCode == 200) {
+        List<dynamic> decodedData = json.decode(response.body);
+        debugPrint('_RoutesScreenState fetchRoutes - Decoded Data: $decodedData');
         setState(() {
-          routes = json.decode(response.body);
+          routes = decodedData;
           isLoading = false;
         });
       } else {
