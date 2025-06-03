@@ -485,20 +485,26 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             body: json.encode(orderData),
                           );
 
+                    // Check mounted before using context after await
+                    if (!mounted) return;
                     Navigator.of(context).pop(); // Close dialog
 
                     if (response.statusCode == 201 || response.statusCode == 200) { // 201 is typical for created, 200 if it returns the object
+                      if (!mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Pedido creado correctamente')),
                       );
                       fetchOrders(); // Refresh the list
                     } else {
+                      if (!mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Error al crear pedido: ${response.body}')),
                       );
                     }
                   } catch (e) {
+                    if (!mounted) return;
                     Navigator.of(context).pop(); // Close dialog
+                    if (!mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Error de conexión: $e')),
                     );
