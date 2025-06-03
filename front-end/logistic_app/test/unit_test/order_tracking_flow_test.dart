@@ -93,8 +93,22 @@ void main() {
       await tester.pumpAndSettle(); // Settle again to ensure dialog is fully rendered
 
       // Tap the "Rastrear" button in the dialog
-      expect(find.widgetWithText(ElevatedButton, 'Rastrear'), findsOneWidget);
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Rastrear'));
+      // First, let's ensure the text "Rastrear" is even found
+      expect(find.text('Rastrear'), findsOneWidget, reason: "The text 'Rastrear' should be present in the dialog.");
+
+      // Using bySubtype<ButtonStyleButton> as it was able to identify the _ElevatedButtonWithIcon
+      final rastrearButtonFinder = find.ancestor(
+        of: find.text('Rastrear'),
+        matching: find.bySubtype<ButtonStyleButton>(),
+      );
+
+      expect(rastrearButtonFinder, findsOneWidget, reason: "The 'Rastrear' ButtonStyleButton (ElevatedButton) should be found.");
+
+      // Ensure the button is visible and pump after to settle any UI changes from scrolling.
+      await tester.ensureVisible(rastrearButtonFinder);
+      await tester.pumpAndSettle();
+
+      await tester.tap(rastrearButtonFinder);
       await tester.pumpAndSettle(); // Navigates to TrackingScreen, TrackingScreen.initState calls fetchTrackingData
 
       // Verify we are on the TrackingScreen and data is displayed
@@ -102,7 +116,8 @@ void main() {
       // The content shows 'Pedido ${trackingData!['orderId']}'
       expect(find.text('Seguimiento de Pedido'), findsOneWidget);
       expect(find.text('Pedido $testOrderId'), findsOneWidget);
-      expect(find.text('En Bodega Central'), findsOneWidget); // Status from tracking mock
+      // There are two instances of "En Bodega Central" (main status and an event status)
+      expect(find.text('En Bodega Central'), findsWidgets); // Status from tracking mock
       expect(find.textContaining('Cliente de Tracking', findRichText: true), findsOneWidget);
       expect(find.text('Procesando en bodega.'), findsOneWidget); // From history event
 

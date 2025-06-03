@@ -99,8 +99,14 @@ void main() {
       await tester.pumpAndSettle(); // Details dialog opens
 
       debugPrint('Test: Tapping "Asignar Conductor" button...');
-      expect(find.widgetWithText(ElevatedButton, 'Asignar Conductor'), findsOneWidget);
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Asignar Conductor'));
+      final asignarButtonFinder = find.ancestor(
+        of: find.text('Asignar Conductor'),
+        matching: find.bySubtype<ButtonStyleButton>(),
+      );
+      expect(asignarButtonFinder, findsOneWidget);
+      await tester.ensureVisible(asignarButtonFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(asignarButtonFinder);
       await tester.pumpAndSettle(); // Driver selection dialog opens, drivers are fetched
 
       debugPrint('Test: Verifying driver selection dialog and selecting driver: $driverToSelectName');
