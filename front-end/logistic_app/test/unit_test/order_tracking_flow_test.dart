@@ -89,6 +89,8 @@ void main() {
       expect(find.text('$testOrderId - Cliente de Tracking'), findsOneWidget);
       await tester.tap(find.text('$testOrderId - Cliente de Tracking'));
       await tester.pumpAndSettle(); // Dialog opens
+      await tester.pump(); // Process pending frames
+      await tester.pumpAndSettle(); // Settle again to ensure dialog is fully rendered
 
       // Tap the "Rastrear" button in the dialog
       expect(find.widgetWithText(ElevatedButton, 'Rastrear'), findsOneWidget);

@@ -364,7 +364,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                         ),
                                       ),
                                       const SizedBox(width: 8),
-                                      Text('Entrega: ${order['estimatedDelivery']}'),
+                                      Expanded(
+                                        child: Text('Entrega: ${order['estimatedDelivery']}'),
+                                      ),
                                     ],
                                   ),
                                 ],

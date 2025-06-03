@@ -275,8 +275,8 @@ class _RoutesScreenState extends State<RoutesScreen> {
                                     children: [
                                       Text('Conductor: ${route['driver'] ?? 'N/A'} | Vehículo: ${route['vehicle'] ?? 'N/A'}'),
                                       Row(children: [
-                                        Text(route['status'] ?? 'N/A'),
-                                        Text('Salida: ${route['departureTime'] != null ? _formatDateTime(route['departureTime']) : 'N/A'}'),
+                                        Expanded(child: Text(route['status'] ?? 'N/A')),
+                                        Expanded(child: Text('Salida: ${route['departureTime'] != null ? _formatDateTime(route['departureTime']) : 'N/A'}')),
                                       ]),
                                     ],
                                   ),
