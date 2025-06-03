@@ -246,9 +246,6 @@ class _RoutesScreenState extends State<RoutesScreen> {
     return routes.where((route) => route['status'] == filterStatus).toList();
   }
 
-  Widget _buildFilterChip(String status) { /* ... */ return Container(); } // Minimized for brevity
-  Widget _buildStatCard(String title, String value, Color color) { /* ... */ return Container(); } // Minimized for brevity
-
   @override
   Widget build(BuildContext context) {
     final filteredRoutes = _getFilteredRoutes();
@@ -256,9 +253,9 @@ class _RoutesScreenState extends State<RoutesScreen> {
       appBar: AppBar(title: const Text('Gestión de Rutas'), actions: [IconButton(icon: const Icon(Icons.refresh), onPressed: fetchRoutes)]),
       body: Column(
         children: [
-          Container(child: const Text("Filtros y búsqueda placeholder")), // Placeholder for brevity
-          if (errorMessage.isNotEmpty) Container(child: Text(errorMessage)),
-          Container(child: const Text("Estadísticas placeholder")), // Placeholder
+          const Text("Filtros y búsqueda placeholder"), // Placeholder for brevity
+          if (errorMessage.isNotEmpty) Text(errorMessage),
+          const Text("Estadísticas placeholder"), // Placeholder
           Expanded(
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
@@ -278,8 +275,8 @@ class _RoutesScreenState extends State<RoutesScreen> {
                                     children: [
                                       Text('Conductor: ${route['driver'] ?? 'N/A'} | Vehículo: ${route['vehicle'] ?? 'N/A'}'),
                                       Row(children: [
-                                        Container(child: Text(route['status'] ?? 'N/A')),
-                                        Text('Salida: ${route['departureTime'] != null ? _formatDateTime(route['departureTime']) : 'N/A'}'),
+                                        Expanded(child: Text(route['status'] ?? 'N/A')),
+                                        Expanded(child: Text('Salida: ${route['departureTime'] != null ? _formatDateTime(route['departureTime']) : 'N/A'}')),
                                       ]),
                                     ],
                                   ),
