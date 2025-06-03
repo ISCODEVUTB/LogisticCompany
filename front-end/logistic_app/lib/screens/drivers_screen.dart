@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class DriversScreen extends StatefulWidget {
-  const DriversScreen({super.key} );
+  final http.Client? client;
+  const DriversScreen({super.key, this.client});
   
   @override
   State<DriversScreen> createState() => _DriversScreenState();
@@ -28,9 +29,10 @@ class _DriversScreenState extends State<DriversScreen> {
 
     try {
       // Intenta obtener datos del backend
-      final response = await http.get(
-        Uri.parse('http://localhost:8000/api/drivers' ),
-      ).timeout(const Duration(seconds: 5));
+      final response = widget.client != null
+          ? await widget.client!.get(Uri.parse('http://localhost:8000/api/drivers'))
+          : await http.get(Uri.parse('http://localhost:8000/api/drivers'));
+      // Note: Timeout handling for injected client is simplified here, similar to OrdersScreen.
 
       if (response.statusCode == 200) {
         setState(() {

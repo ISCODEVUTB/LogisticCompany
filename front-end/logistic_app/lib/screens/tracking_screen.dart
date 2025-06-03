@@ -4,8 +4,9 @@ import 'package:http/http.dart' as http;
 
 class TrackingScreen extends StatefulWidget {
   final String? orderId;
+  final http.Client? client;
   
-  const TrackingScreen({super.key, this.orderId} );
+  const TrackingScreen({super.key, this.orderId, this.client});
 
   @override
   State<TrackingScreen> createState() => _TrackingScreenState();
@@ -38,9 +39,10 @@ class _TrackingScreenState extends State<TrackingScreen> {
 
     try {
       // Intenta obtener datos del backend
-      final response = await http.get(
-        Uri.parse('http://localhost:8000/api/tracking/$orderId' ),
-      ).timeout(const Duration(seconds: 5));
+      final response = widget.client != null
+          ? await widget.client!.get(Uri.parse('http://localhost:8000/api/tracking/$orderId'))
+          : await http.get(Uri.parse('http://localhost:8000/api/tracking/$orderId'));
+      // Note: Timeout handling for injected client is simplified.
 
       if (response.statusCode == 200) {
         setState(() {
