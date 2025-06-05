@@ -1,6 +1,7 @@
 from fastapi import APIRouter
-from app.services.tracking_service import TrackingService
+
 from app.schemas.tracking_schemas import TrackingEventCreate
+from app.services.tracking_service import TrackingService
 
 router = APIRouter()
 service = TrackingService()
@@ -15,9 +16,11 @@ def track_package(data: TrackingEventCreate):
 def get_tracking_history(tracking_code: str):
     return service.get_history(tracking_code)
 
+
 @router.get("/", response_model=list)
 def get_all_events():
     return service.get_all_events()
+
 
 @router.get("", response_model=list)
 def get_all_events_alias():

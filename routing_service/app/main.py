@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import router as route_router
+
+from .api.routes import router as route_router
 
 app = FastAPI(title="Routing Microservice")
 

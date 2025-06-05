@@ -1,17 +1,14 @@
 import httpx
 from fastapi import APIRouter, HTTPException
-from app.schemas.shipping_order_schema import (
-    ShippingOrderCreateDTO,
-    ShippingOrderResponseDTO
-)
-from app.services.shipping_order_service import (
-    create_shipping_order,
-    get_shipping_order_by_id,
-    cancel_shipping_order,
-    update_shipping_order_status,
-    track_shipping_order,
-    get_all_shipping_orders
-)
+
+from ..schemas.shipping_order_schema import (ShippingOrderCreateDTO,
+                                                ShippingOrderResponseDTO)
+from ..services.shipping_order_service import (cancel_shipping_order,
+                                                  create_shipping_order,
+                                                  get_all_shipping_orders,
+                                                  get_shipping_order_by_id,
+                                                  track_shipping_order,
+                                                  update_shipping_order_status)
 
 router = APIRouter()
 
@@ -35,15 +32,13 @@ async def cancel_order(order_id: str):
     success = await cancel_shipping_order(order_id)
     if not success:
         raise HTTPException(status_code=400, detail="Unable to cancel the order")
-    
-
 
 @router.post("/orders/{order_id}/status", status_code=204)
 async def update_status(order_id: str, status: str):
-    success = update_shipping_order_status(order_id, status)
+    # The service function update_shipping_order_status is async, so await it directly.
+    success = await update_shipping_order_status(order_id, status)
     if not success:
         raise HTTPException(status_code=400, detail="Unable to update order status")
-    
 
 
 @router.get("/orders/track/{tracking_code}", response_model=ShippingOrderResponseDTO)
@@ -58,7 +53,6 @@ def track_order(tracking_code: str):
 def list_orders():
     return get_all_shipping_orders()
 
-import httpx
 
 @router.get("/dashboard")
 def dashboard():
@@ -72,7 +66,9 @@ def dashboard():
         drivers_resp = httpx.get("http://driver_service:8001/api/drivers", timeout=3)
         drivers = drivers_resp.json()
         conductores_disponibles = sum(1 for d in drivers if d.get("disponible", False))
-        conductores_asignados = sum(1 for d in drivers if not d.get("disponible", False))
+        conductores_asignados = sum(
+            1 for d in drivers if not d.get("disponible", False)
+        )
     except Exception:
         conductores_disponibles = 0
         conductores_asignados = 0
@@ -92,7 +88,10 @@ def dashboard():
 
     return {
         "pedidos": {"total": total_pedidos, "enTransito": en_transito},
-        "conductores": {"disponibles": conductores_disponibles, "asignados": conductores_asignados},
+        "conductores": {
+            "disponibles": conductores_disponibles,
+            "asignados": conductores_asignados,
+        },
         "rutas": {"activas": rutas_activas},
-        "tracking": {"eventos": tracking_eventos}
+        "tracking": {"eventos": tracking_eventos},
     }

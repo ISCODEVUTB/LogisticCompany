@@ -1,18 +1,12 @@
 import uuid
 from datetime import datetime, timezone
-from app.models.driver import Driver
-from app.schemas.driver_schema import (
-    DriverCreateDTO,
-    DriverUpdateDTO,
-    DriverResponseDTO
-)
-from app.repository.driver_repo import (
-    save_driver,
-    get_driver_by_id,
-    get_all_drivers,
-    update_driver,
-    delete_driver
-)
+
+from ..models.driver import Driver
+from ..repository.driver_repo import (delete_driver, get_all_drivers,
+                                      get_driver_by_id, save_driver,
+                                      update_driver)
+from ..schemas.driver_schema import (DriverCreateDTO, DriverResponseDTO,
+                                     DriverUpdateDTO)
 
 
 def create_driver(dto: DriverCreateDTO) -> DriverResponseDTO:
@@ -23,7 +17,7 @@ def create_driver(dto: DriverCreateDTO) -> DriverResponseDTO:
         name=dto.name,
         license_id=dto.license_id,
         phone=dto.phone,
-        status="available"
+        status="available",
     )
 
     save_driver(driver)
@@ -35,7 +29,7 @@ def create_driver(dto: DriverCreateDTO) -> DriverResponseDTO:
         phone=driver.phone,
         status=driver.status,
         created_at=driver.created_at,
-        updated_at=driver.updated_at
+        updated_at=driver.updated_at,
     )
 
 
@@ -60,18 +54,18 @@ def update_driver_data(driver_id: str, dto: DriverUpdateDTO) -> bool:
 def deactivate_driver(driver_id: str) -> bool:
     return delete_driver(driver_id)
 
+
 def assign_route(driver_id: str, route_id: str) -> bool:
     driver = get_driver_by_id(driver_id)
     if not driver:
         return False
 
     if not hasattr(driver, "assigned_routes"):
-            driver.assigned_routes = []
-    
+        driver.assigned_routes = []
+
     if route_id not in driver.assigned_routes:
         driver.assigned_routes.append(route_id)
         driver.updated_at = datetime.now(timezone.utc)
         save_driver(driver)
 
     return True
-

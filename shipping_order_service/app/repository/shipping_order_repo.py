@@ -1,11 +1,12 @@
 import json
-from pathlib import Path
-from typing import Optional, Dict
-from app.models.shipping_order import ShippingOrder
 from datetime import datetime, timezone
+from pathlib import Path
+from typing import Dict, Optional
+
+from ..models.shipping_order import ShippingOrder
 
 # Ruta del archivo JSON
-DB_FILE = Path("app/repository/orders.json")
+DB_FILE = Path(__file__).parent / "orders.json"
 
 
 def load_orders() -> Dict[str, dict]:
@@ -23,7 +24,6 @@ def save_orders(data: Dict[str, dict]):
 
     with DB_FILE.open("w", encoding="utf-8") as file:
         json.dump(data, file, indent=4, ensure_ascii=False, default=default_serializer)
-
 
 
 def save_order(order: ShippingOrder):
@@ -68,6 +68,8 @@ def cancel_order(order_id: str) -> Optional[dict]:
         save_orders(orders)
         return True
     return False
+
+
 def get_all_orders():
     orders = load_orders()
     return [ShippingOrder(**data) for data in orders.values()]
