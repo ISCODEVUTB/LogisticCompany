@@ -276,7 +276,8 @@ class _RoutesScreenState extends State<RoutesScreen> {
           ScaffoldMessenger.of(this.context).showSnackBar( // Assuming 'this.context' is the main screen's context
             const SnackBar(content: Text('Conductor asignado a la ruta.')),
           );
-          fetchRoutes(); // Refresh the routes list on the main screen
+          fetchRoutes(); // Refresh the routes list on the main scr
+          
         } else {
           if (!Navigator.of(currentContext).mounted) return;
            ScaffoldMessenger.of(this.context).showSnackBar( // Use main screen's context
