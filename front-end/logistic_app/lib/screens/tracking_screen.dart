@@ -40,7 +40,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
     try {
       // Intenta obtener datos del backend
 
-      final response = await http.get(Uri.parse('http://localhost:8000/api/tracking/$orderId'));main
+      final response = await http.get(Uri.parse('http://localhost:8000/api/tracking/$orderId'));
       if (response.statusCode == 200) {
         setState(() {
           trackingData = json.decode(response.body);

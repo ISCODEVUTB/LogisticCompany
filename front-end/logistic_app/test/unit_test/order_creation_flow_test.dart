@@ -40,12 +40,12 @@ void main() {
         });
     
     // Mock successful GET for dashboard (called by DashboardScreen)
-    when(mockClient.get(Uri.parse('http://localhost:8000/api/dashboard')))
+    when(mockClient.get(Uri.parse('http://localhost:8000/api/dashboard_disabled')))
         .thenAnswer((_) async => http.Response('{"pedidos": {"total": 1, "enTransito": 0}, "conductores": {"disponibles": 0, "asignados": 0}, "rutas": {"activas": 0}, "tracking": {"eventos": 0}}', 200, headers: {'content-type': 'application/json; charset=utf-8'}));
 
     // Mock successful POST for order creation
     when(mockClient.post(
-      Uri.parse('http://localhost:8000/api/orders'),
+      Uri.parse('http://localhost:8002/orders'),
       headers: anyNamed('headers'),
       body: anyNamed('body'),
       encoding: anyNamed('encoding'),
@@ -68,10 +68,20 @@ void main() {
     await tester.tap(find.byTooltip('Nuevo Pedido'));
     await tester.pumpAndSettle();
     
-    await tester.enterText(find.byKey(const Key('input_cliente')), 'Cliente Ejemplo');
-    await tester.enterText(find.byKey(const Key('input_origen')), 'Cartagena');
-    await tester.enterText(find.byKey(const Key('input_destino')), 'Barranquilla');
-    await tester.enterText(find.byKey(const Key('input_peso')), '25');
+    // Sender details
+    await tester.enterText(find.byKey(const Key('input_sender_name')), 'Remitente Ejemplo');
+    await tester.enterText(find.byKey(const Key('input_sender_address')), 'Calle Falsa 123, Origen'); // Represents 'input_origen'
+    await tester.enterText(find.byKey(const Key('input_sender_phone')), '3001234567');
+
+    // Receiver details
+    await tester.enterText(find.byKey(const Key('input_receiver_name')), 'Cliente Ejemplo'); // Matches 'Cliente Ejemplo'
+    await tester.enterText(find.byKey(const Key('input_receiver_address')), 'Avenida Siempre Viva 742, Barranquilla'); // Represents 'input_destino'
+    await tester.enterText(find.byKey(const Key('input_receiver_phone')), '3109876543');
+
+    // Package details
+    await tester.enterText(find.byKey(const Key('input_pickup_date')), '2025-08-15 10:00:00'); // Valid date format
+    await tester.enterText(find.byKey(const Key('input_peso')), '25'); // This was correct
+    await tester.enterText(find.byKey(const Key('input_package_dimensions')), '30x20x10');
     await tester.pumpAndSettle();
     
     await tester.tap(find.byKey(const Key('guardar_button')));

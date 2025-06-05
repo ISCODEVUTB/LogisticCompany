@@ -26,31 +26,38 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Future<void> fetchOrders() async {
     setState(() {
       isLoading = true;
+      errorMessage = ''; // Also reset error message at the beginning
     });
 
+    http.Client? localClient; // To keep track of locally created client
+
     try {
-      // Intenta obtener datos del backend
-      final response = await http.get(Uri.parse('http://localhost:8000/api/orders/'));
+      final httpClient = widget.client ?? (localClient = http.Client());
+      final response = await httpClient.get(Uri.parse('http://localhost:8000/api/orders/'));
+
       if (response.statusCode == 200) {
+        if (!mounted) return;
         setState(() {
           orders = json.decode(response.body);
           isLoading = false;
         });
       } else {
-        // Si hay error, usar datos de muestra
+        if (!mounted) return;
         setState(() {
           orders = sampleOrders;
           isLoading = false;
-          errorMessage = 'No se pudieron cargar los datos del servidor. Mostrando datos de muestra.';
+          errorMessage = 'No se pudieron cargar los datos del servidor (Código: ${response.statusCode}). Mostrando datos de muestra.';
         });
       }
     } catch (e) {
-      // En caso de error de conexión, usar datos de muestra
+      if (!mounted) return;
       setState(() {
         orders = sampleOrders;
         isLoading = false;
         errorMessage = 'Error de conexión: $e. Mostrando datos de muestra.';
       });
+    } finally {
+      localClient?.close(); // Close the client only if it was created locally
     }
   }
 
