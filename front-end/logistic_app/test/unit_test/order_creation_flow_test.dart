@@ -7,6 +7,7 @@ import 'dart:convert'; // For json.encode
 
 // Import the generated mocks
 import 'backend_integration_test.mocks.dart'; // Assuming MockClient is here
+import 'mock_utils.dart';
 
 void main() {
   late MockClient mockClient;
@@ -16,6 +17,7 @@ void main() {
   });
 
   testWidgets('Flujo completo de creación de pedido', (WidgetTester tester) async {
+    setupCommonMocks(mockClient);
     // Data for the new order that will be "created"
     final newOrderData = {
       'id': 'ORD-MOCK-NEW',
@@ -68,10 +70,15 @@ void main() {
     await tester.tap(find.byTooltip('Nuevo Pedido'));
     await tester.pumpAndSettle();
     
-    await tester.enterText(find.byKey(const Key('input_cliente')), 'Cliente Ejemplo');
-    await tester.enterText(find.byKey(const Key('input_origen')), 'Cartagena');
-    await tester.enterText(find.byKey(const Key('input_destino')), 'Barranquilla');
+    await tester.enterText(find.byKey(const Key('input_sender_name')), 'Cliente Ejemplo');
+    await tester.enterText(find.byKey(const Key('input_sender_address')), 'Cartagena');
+    await tester.enterText(find.byKey(const Key('input_sender_phone')), '3001234567');
+    await tester.enterText(find.byKey(const Key('input_receiver_name')), 'Destinatario Ejemplo');
+    await tester.enterText(find.byKey(const Key('input_receiver_address')), 'Barranquilla');
+    await tester.enterText(find.byKey(const Key('input_receiver_phone')), '3109876543');
+    await tester.enterText(find.byKey(const Key('input_pickup_date')), '2024-07-15 10:00:00');
     await tester.enterText(find.byKey(const Key('input_peso')), '25');
+    await tester.enterText(find.byKey(const Key('input_package_dimensions')), '10x10x10');
     await tester.pumpAndSettle();
     
     await tester.tap(find.byKey(const Key('guardar_button')));

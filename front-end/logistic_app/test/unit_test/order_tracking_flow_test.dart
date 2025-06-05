@@ -11,6 +11,7 @@ import 'dart:convert'; // For json.encode
 // Import the generated mocks and mock http client classes from screen_navigation_test
 import 'backend_integration_test.mocks.dart';
 import 'screen_navigation_test.dart'; // This now contains MockHttpClient etc.
+import 'mock_utils.dart';
 
 void main() {
   late MockClient mockClient;
@@ -20,6 +21,7 @@ void main() {
   });
 
   testWidgets('Flujo completo de tracking de pedido', (WidgetTester tester) async {
+    setupCommonMocks(mockClient);
     const String testOrderId = 'ORD-MOCK-TRACK';
     final mockOrder = {
       'id': testOrderId,

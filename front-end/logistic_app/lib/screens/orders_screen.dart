@@ -30,7 +30,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
     try {
       // Intenta obtener datos del backend
-      final response = await http.get(Uri.parse('http://localhost:8000/api/orders/'));
+      final client = widget.client ?? http.Client();
+      final response = await client.get(Uri.parse('http://localhost:8000/api/orders'));
       if (response.statusCode == 200) {
         setState(() {
           orders = json.decode(response.body);
