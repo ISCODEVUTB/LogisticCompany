@@ -116,7 +116,6 @@ async def update_shipping_order_status(order_id: str, new_status: str) -> bool:
         logging.info(f"Order ID: {order_id} not found in repo or not updated.")
         return False
 
-
 def track_shipping_order(tracking_code: str) -> ShippingOrderResponseDTO | None:
     order = get_order_by_tracking_code(tracking_code)
     if order is None:

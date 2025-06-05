@@ -168,6 +168,7 @@ class _RoutesScreenState extends State<RoutesScreen> {
 
                             if (!mounted) return;
 
+
                             // Pop dialog first
                             Navigator.of(detailsDialogContext).pop();
 
@@ -180,14 +181,12 @@ class _RoutesScreenState extends State<RoutesScreen> {
                             } else {
                               if (!mounted) return;
                               ScaffoldMessenger.of(this.context).showSnackBar(
+
                                 SnackBar(content: Text('Error al completar ruta: ${response.body}')),
                               );
                             }
                           } catch (e) {
-                            // If dialog might still be open due to error before pop:
-                            // Navigator.of(detailsDialogContext).maybePop(); // Safely try to pop
-                            if (!mounted) return;
-                            ScaffoldMessenger.of(this.context).showSnackBar(
+
                               SnackBar(content: Text('Error de conexión al completar ruta: $e')),
                             );
                           }
@@ -276,6 +275,7 @@ class _RoutesScreenState extends State<RoutesScreen> {
           // Potentially pop the details dialog as well, or let the caller handle it.
           // For now, just pop the selection dialog.
           // The caller of _showDriverSelectionDialog would then call fetchRoutes().
+
           if (!mounted) return; // Check before using context for ScaffoldMessenger
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Conductor asignado a la ruta.')),
@@ -284,12 +284,16 @@ class _RoutesScreenState extends State<RoutesScreen> {
         } else {
           if (!mounted) return; // Check before using context for ScaffoldMessenger
            ScaffoldMessenger.of(context).showSnackBar(
+
+
+          
             SnackBar(content: Text('Error al asignar conductor: ${response.body} (Status: ${response.statusCode})')),
           );
         }
       } catch (e) {
         if (!mounted) return; // Check before using context for ScaffoldMessenger
          ScaffoldMessenger.of(context).showSnackBar(
+
           SnackBar(content: Text('Error de conexión al asignar conductor: $e')),
         );
       }
@@ -434,9 +438,8 @@ class _RoutesScreenState extends State<RoutesScreen> {
                     }
                   } catch (e) {
                     if (!mounted) return;
-                    // Consider if dialog is still open here. If so, pop it.
-                    // Navigator.of(context).maybePop(); // Safely try to pop
-                    ScaffoldMessenger.of(this.context).showSnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(
+
                       SnackBar(content: Text('Error de conexión: $e')),
                     );
                   }
