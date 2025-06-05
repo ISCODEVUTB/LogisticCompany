@@ -14,6 +14,7 @@ import 'backend_integration_test.mocks.dart'; // MockClient
 // For this example, I'll copy them here if they are not automatically available via an import.
 // If they ARE in screen_navigation_test.dart, this import is fine.
 import 'screen_navigation_test.dart';
+import 'mock_utils.dart';
 
 void main() {
   late MockClient mockClient;
@@ -23,6 +24,7 @@ void main() {
   });
 
   testWidgets('Asignación de conductor a ruta', (WidgetTester tester) async {
+    setupCommonMocks(mockClient);
     const routeIdToAssign = "RUT-001";
     const routeNameToFind = "Ruta #$routeIdToAssign"; // Used in find.text()
     const driverToSelectId = "DRV-JP";

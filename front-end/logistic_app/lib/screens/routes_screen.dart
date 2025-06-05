@@ -29,7 +29,8 @@ class _RoutesScreenState extends State<RoutesScreen> {
 
     try {
       // Intenta obtener datos del backend
-      final response = await http.get(Uri.parse('http://localhost:8002/api/routes/'));
+      final client = widget.client ?? http.Client();
+      final response = await client.get(Uri.parse('http://localhost:8000/api/routes')); // Corrected URL and client usage
 
       if (response.statusCode == 200) {
         List<dynamic> decodedData = json.decode(response.body);

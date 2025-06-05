@@ -57,21 +57,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // Método para obtener datos del backend
   Future<void> _fetchDashboardData() async {
     try {
+      final uri = Uri.parse('http://localhost:8000/api/dashboard'); // Changed URI
       final response = widget.client != null
-          ? await widget.client!.get(Uri.parse('http://localhost:8000/api/dashboard_disabled'))
-          : await http.get(Uri.parse('http://localhost:8000/api/dashboard_disabled'));
+          ? await widget.client!.get(uri)
+          : await http.get(uri);
       
       if (response.statusCode == 200) {
         final Map<String, dynamic> parsedData = json.decode(response.body);
-        debugPrint('DashboardScreen _fetchDashboardData - Parsed Data: $parsedData');
+        debugPrint('DashboardScreen _fetchDashboardData - Parsed Data from /api/dashboard: $parsedData'); // Updated log
         setState(() {
           dashboardData = parsedData;
         });
+      } else {
+        // Handle error or fallback for /api/dashboard if needed
+        debugPrint('Error fetching /api/dashboard: ${response.statusCode}');
+        // Consider if dashboard_disabled should be tried here as a fallback
       }
     } catch (e) {
-      // Usar un sistema de logging en lugar de print
-      debugPrint('Error al cargar datos: $e');
-      // Usar datos de muestra en caso de error
+      debugPrint('Error al cargar datos del dashboard: $e');
     }
   }
 
