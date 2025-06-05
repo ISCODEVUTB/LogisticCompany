@@ -56,7 +56,6 @@ packages:
       sha256: "4ae2de3e1e67ea270081eaee972e1bd8f027d459f249e0f1186730784c2e7e33"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.2"
   build_daemon:
     dependency: transitive
     description:
@@ -181,6 +180,7 @@ packages:
     dependency: transitive
     description:
       name: fake_async
+
       sha256: "6a95e56b2449df2273fd8c45a662d6947ce1ebb7aafe80e550a3f68297f3cacc"
       url: "https://pub.dev"
     source: hosted

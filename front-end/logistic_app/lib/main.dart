@@ -11,7 +11,8 @@ void main( ) {
 }
 
 class LogisticDashboardApp extends StatelessWidget {
-  const LogisticDashboardApp({super.key});
+  final http.Client? client;
+  const LogisticDashboardApp({this.client, super.key});
   
   @override
   Widget build(BuildContext context) {
@@ -21,13 +22,14 @@ class LogisticDashboardApp extends StatelessWidget {
         primarySwatch: Colors.blueGrey,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const DashboardScreen(),
+      home: DashboardScreen(client: client),
     );
   }
 }
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+  final http.Client? client;
+  const DashboardScreen({super.key, this.client});
   
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -55,12 +57,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // Método para obtener datos del backend
   Future<void> _fetchDashboardData() async {
     try {
-      // Esta URL debe ser reemplazada por la URL real de tu API
-      final response = await http.get(Uri.parse('http://localhost:8000/api/dashboard' ));
+      final response = widget.client != null
+          ? await widget.client!.get(Uri.parse('http://localhost:8000/api/dashboard_disabled'))
+          : await http.get(Uri.parse('http://localhost:8000/api/dashboard_disabled'));
       
       if (response.statusCode == 200) {
+        final Map<String, dynamic> parsedData = json.decode(response.body);
+        debugPrint('DashboardScreen _fetchDashboardData - Parsed Data: $parsedData');
         setState(() {
-          dashboardData = json.decode(response.body);
+          dashboardData = parsedData;
         });
       }
     } catch (e) {
@@ -81,13 +86,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       case 0:
         return _buildDashboardContent();
       case 1:
-        return const OrdersScreen();
+        return OrdersScreen(client: widget.client); // Pass client
       case 2:
-        return const DriversScreen();
+        return DriversScreen(client: widget.client); // Pass client
       case 3:
-        return const RoutesScreen();
+        return RoutesScreen(client: widget.client); // Pass client (will be refactored later)
       case 4:
-        return const TrackingScreen();
+        return TrackingScreen(client: widget.client); // Pass client (will be refactored later)
       default:
         return _buildDashboardContent();
     }
@@ -140,6 +145,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('DashboardScreen build - Current dashboardData: $dashboardData');
     return Scaffold(
       appBar: AppBar(
         title: const Text('Panel de Gestión Logística'),

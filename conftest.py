@@ -20,6 +20,6 @@ def mock_services():
             return None
         mock_send.side_effect = mock_coro
 
-        with patch('shipping_order_service.app.services.tracking_service_client.httpx.AsyncClient', new_callable=AsyncMock ) as mock_specific_async_client:
-           
-            yield mock_send 
+        with patch('shipping_order_service.app.services.tracking_service_client.httpx.AsyncClient', new_callable=AsyncMock):
+            # Eliminamos la asignación a mock_specific_async_client
+            yield mock_send

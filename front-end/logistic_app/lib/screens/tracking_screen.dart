@@ -4,8 +4,9 @@ import 'package:http/http.dart' as http;
 
 class TrackingScreen extends StatefulWidget {
   final String? orderId;
+  final http.Client? client;
   
-  const TrackingScreen({super.key, this.orderId} );
+  const TrackingScreen({super.key, this.orderId, this.client});
 
   @override
   State<TrackingScreen> createState() => _TrackingScreenState();
@@ -38,8 +39,8 @@ class _TrackingScreenState extends State<TrackingScreen> {
 
     try {
       // Intenta obtener datos del backend
-      final response = await http.get(Uri.parse('http://localhost:8000/api/tracking/$orderId'));
 
+      final response = await http.get(Uri.parse('http://localhost:8000/api/tracking/$orderId'));main
       if (response.statusCode == 200) {
         setState(() {
           trackingData = json.decode(response.body);

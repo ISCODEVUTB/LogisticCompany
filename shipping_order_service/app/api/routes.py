@@ -31,8 +31,8 @@ def get_order(order_id: str):
 
 
 @router.post("/orders/{order_id}/cancel", status_code=204)
-def cancel_order(order_id: str):
-    success = cancel_shipping_order(order_id)
+async def cancel_order(order_id: str):
+    success = await cancel_shipping_order(order_id)
     if not success:
         raise HTTPException(status_code=400, detail="Unable to cancel the order")
     

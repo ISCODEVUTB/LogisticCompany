@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:logistic_company_web/screens/tracking_screen.dart'; // Added import
 
 class OrdersScreen extends StatefulWidget {
-  const OrdersScreen({super.key} );
+  final http.Client? client;
+
+  const OrdersScreen({super.key, this.client});
   
   @override
   State<OrdersScreen> createState() => _OrdersScreenState();
@@ -28,7 +31,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
     try {
       // Intenta obtener datos del backend
       final response = await http.get(Uri.parse('http://localhost:8000/api/orders/'));
-
       if (response.statusCode == 200) {
         setState(() {
           orders = json.decode(response.body);
@@ -147,14 +149,82 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 _buildDetailRow('Conductor', order['driver']),
                 _buildDetailRow('Entrega estimada', order['estimatedDelivery']),
                 const SizedBox(height: 20),
-                const Text('Acciones', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                // Dropdown and button for status update
+                Builder( // Use Builder to get a context within the Dialog for ScaffoldMessenger
+                  builder: (dialogContext) {
+                    String? newSelectedStatus = order['status']; // Initialize with current status
+                    final List<String> possibleStatuses = ['Pendiente', 'En preparación', 'En tránsito', 'Entregado', 'Cancelado'];
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        DropdownButtonFormField<String>(
+                          value: newSelectedStatus,
+                          hint: const Text('Seleccionar nuevo estado'),
+                          items: possibleStatuses
+                              .map((status) => DropdownMenuItem<String>(
+                                    value: status,
+                                    child: Text(status),
+                                  ))
+                              .toList(),
+                          onChanged: (String? value) {
+                            newSelectedStatus = value;
+                          },
+                          decoration: const InputDecoration(labelText: 'Nuevo Estado del Pedido'),
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          child: const Text('Actualizar Estado'),
+                          onPressed: () async {
+                            if (newSelectedStatus == null || newSelectedStatus == order['status']) {
+                              ScaffoldMessenger.of(dialogContext).showSnackBar(
+                                const SnackBar(content: Text('No se ha seleccionado un nuevo estado o el estado es el mismo.')),
+                              );
+                              return;
+                            }
+                            final String orderId = order['id'];
+                            final String statusToUpdate = newSelectedStatus!;
+
+                            try {
+                              final uri = Uri.parse('http://localhost:8002/orders/$orderId/status?status=$statusToUpdate');
+                              final response = widget.client != null
+                                  ? await widget.client!.patch(uri)
+                                  : await http.patch(uri);
+
+                              if (!mounted) return;
+
+                              if (response.statusCode == 200 || response.statusCode == 204) {
+                                Navigator.of(context).pop(); // Close the details dialog
+                                fetchOrders(); // Refresh the list
+                                ScaffoldMessenger.of(context).showSnackBar( // Use main context for SnackBar after dialog is closed
+                                  const SnackBar(content: Text('Estado actualizado correctamente')),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(dialogContext).showSnackBar( // Use dialog context for SnackBar if dialog is still open
+                                  SnackBar(content: Text('Error al actualizar estado: ${response.body}')),
+                                );
+                              }
+                            } catch (e) {
+                              if (!mounted) return;
+                               ScaffoldMessenger.of(dialogContext).showSnackBar(
+                                SnackBar(content: Text('Error de conexión: $e')),
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    );
+                  }
+                ),
+                const SizedBox(height: 20),
+                const Text('Otras Acciones', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton.icon(
                       icon: const Icon(Icons.edit),
-                      label: const Text('Editar'),
+                      label: const Text('Editar (Placeholder)'),
                       onPressed: () {
                         Navigator.pop(context);
                         // Aquí iría la navegación a la pantalla de edición
@@ -164,11 +234,81 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       ),
                     ),
                     ElevatedButton.icon(
+                      icon: const Icon(Icons.cancel),
+                      label: const Text('Cancelar Pedido'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      onPressed: () {
+                        // Store the details dialog context
+                        final BuildContext detailsDialogContext = context;
+                        showDialog(
+                          context: detailsDialogContext, // Use details dialog's context to show confirmation on top
+                          builder: (BuildContext confirmDialogContext) { // This is the context for the confirmation dialog itself
+                            return AlertDialog(
+                              title: const Text('Confirmar Cancelación'),
+                              content: const Text('¿Está seguro de que desea cancelar este pedido? Esta acción no se puede deshacer.'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('No'),
+                                  onPressed: () {
+                                    Navigator.of(confirmDialogContext).pop(); // Close confirmation dialog
+                                  },
+                                ),
+                                TextButton(
+                                  child: const Text('Sí'),
+                                  onPressed: () async {
+                                    final String orderId = order['id'];
+                                    try {
+                                      final uri = Uri.parse('http://localhost:8002/orders/$orderId/cancel');
+                                      final response = widget.client != null
+                                          ? await widget.client!.post(uri) // Assuming POST for cancel as per backend
+                                          : await http.post(uri);
+
+                                      if (!mounted) return;
+
+                                      Navigator.of(confirmDialogContext).pop(); // Close confirmation dialog
+
+                                      if (response.statusCode == 200 || response.statusCode == 204) {
+                                        Navigator.of(detailsDialogContext).pop(); // Close details dialog
+                                        fetchOrders(); // Refresh list
+                                        ScaffoldMessenger.of(detailsDialogContext).showSnackBar( // Or use the main screen's context if detailsDialogContext is problematic after pop
+                                          const SnackBar(content: Text('Pedido cancelado correctamente')),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(detailsDialogContext).showSnackBar(
+                                          SnackBar(content: Text('Error al cancelar pedido: ${response.body}')),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      if (!mounted) return;
+                                      Navigator.of(confirmDialogContext).pop(); // Close confirmation dialog on error too
+                                      ScaffoldMessenger.of(detailsDialogContext).showSnackBar(
+                                        SnackBar(content: Text('Error de conexión al cancelar: $e')),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    ElevatedButton.icon(
                       icon: const Icon(Icons.location_on),
                       label: const Text('Rastrear'),
                       onPressed: () {
-                        Navigator.pop(context);
-                        // Aquí iría la navegación a la pantalla de tracking
+                        Navigator.pop(context); // Close the dialog first
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TrackingScreen(
+                              orderId: order['id'], // Pass the order ID
+                              client: widget.client, // Pass the client
+                            ),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
@@ -339,7 +479,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                         ),
                                       ),
                                       const SizedBox(width: 8),
-                                      Text('Entrega: ${order['estimatedDelivery']}'),
+                                      Expanded(
+                                        child: Text('Entrega: ${order['estimatedDelivery']}'),
+                                      ),
                                     ],
                                   ),
                                 ],
@@ -357,13 +499,183 @@ class _OrdersScreenState extends State<OrdersScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Implementar creación de nuevo pedido
-        },
+        onPressed: _showCreateOrderDialog,
         backgroundColor: Colors.blueGrey[700],
-        tooltip: 'Nuevo pedido',
+        tooltip: 'Nuevo Pedido', // Matched to test
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  void _showCreateOrderDialog() {
+    final formKey = GlobalKey<FormState>();
+    String senderName = '';
+    String senderAddress = '';
+    String senderPhone = '';
+    String receiverName = '';
+    String receiverAddress = '';
+    String receiverPhone = '';
+    String pickupDateRaw = '';
+    String packageWeight = '';
+    String packageDimensions = '';
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Crear Nuevo Pedido'),
+          content: SingleChildScrollView( // To prevent overflow if keyboard appears
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  TextFormField(
+                    key: const Key('input_sender_name'),
+                    decoration: const InputDecoration(labelText: 'Nombre Remitente'),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese el nombre del remitente' : null,
+                    onSaved: (value) => senderName = value!,
+                  ),
+                  TextFormField(
+                    key: const Key('input_sender_address'),
+                    decoration: const InputDecoration(labelText: 'Dirección Remitente'),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese la dirección del remitente' : null,
+                    onSaved: (value) => senderAddress = value!,
+                  ),
+                  TextFormField(
+                    key: const Key('input_sender_phone'),
+                    decoration: const InputDecoration(labelText: 'Teléfono Remitente'),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese el teléfono del remitente' : null,
+                    onSaved: (value) => senderPhone = value!,
+                  ),
+                  TextFormField(
+                    key: const Key('input_receiver_name'),
+                    decoration: const InputDecoration(labelText: 'Nombre Destinatario'),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese el nombre del destinatario' : null,
+                    onSaved: (value) => receiverName = value!,
+                  ),
+                  TextFormField(
+                    key: const Key('input_receiver_address'),
+                    decoration: const InputDecoration(labelText: 'Dirección Destinatario'),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese la dirección del destinatario' : null,
+                    onSaved: (value) => receiverAddress = value!,
+                  ),
+                  TextFormField(
+                    key: const Key('input_receiver_phone'),
+                    decoration: const InputDecoration(labelText: 'Teléfono Destinatario'),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese el teléfono del destinatario' : null,
+                    onSaved: (value) => receiverPhone = value!,
+                  ),
+                  TextFormField(
+                    key: const Key('input_pickup_date'),
+                    decoration: const InputDecoration(labelText: 'Fecha Recogida (YYYY-MM-DD HH:MM:SS)'),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese la fecha de recogida' : null,
+                    onSaved: (value) => pickupDateRaw = value!,
+                  ),
+                  TextFormField(
+                    key: const Key('input_peso'), // Reuse key if it makes sense, or create 'input_package_weight'
+                    decoration: const InputDecoration(labelText: 'Peso Paquete (kg)'),
+                    keyboardType: TextInputType.number,
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese el peso del paquete' : null,
+                    onSaved: (value) => packageWeight = value!,
+                  ),
+                  TextFormField(
+                    key: const Key('input_package_dimensions'),
+                    decoration: const InputDecoration(labelText: 'Dimensiones Paquete (LxWxH)'),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese las dimensiones del paquete' : null,
+                    onSaved: (value) => packageDimensions = value!,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              key: const Key('guardar_button'), // Key for the save button
+              child: const Text('Guardar'),
+              onPressed: () async {
+                if (formKey.currentState!.validate()) {
+                  formKey.currentState!.save();
+
+                  String pickupDateISO = '';
+                  try {
+                    // Assuming pickupDateRaw is "YYYY-MM-DD HH:MM:SS"
+                    DateTime parsedDate = DateTime.parse(pickupDateRaw.replaceFirst(' ', 'T'));
+                    pickupDateISO = '${parsedDate.toIso8601String()}Z'; // Append Z for UTC
+                  } catch (e) {
+                    // Handle parsing error, maybe show a message to the user
+                    debugPrint("Error parsing date: $e");
+                    // For now, let it proceed, backend might catch it or use a default
+                  }
+
+
+                  final orderData = {
+                    "sender": {
+                      "name": senderName,
+                      "address": senderAddress,
+                      "phone": senderPhone
+                    },
+                    "receiver": {
+                      "name": receiverName,
+                      "address": receiverAddress,
+                      "phone": receiverPhone
+                    },
+                    "pickup_date": pickupDateISO,
+                    "package": {
+                      "weight": double.tryParse(packageWeight) ?? 0.0,
+                      "dimensions": packageDimensions
+                    }
+                  };
+
+                  try {
+                    final response = widget.client != null
+                        ? await widget.client!.post(
+                            Uri.parse('http://localhost:8002/orders'),
+                            headers: {'Content-Type': 'application/json; charset=utf-8'},
+                            body: json.encode(orderData),
+                          )
+                        : await http.post(
+                            Uri.parse('http://localhost:8002/orders'),
+                            headers: {'Content-Type': 'application/json; charset=utf-8'},
+                            body: json.encode(orderData),
+                          );
+
+                    // Check mounted before using context after await
+                    if (!mounted) return;
+                    Navigator.of(context).pop(); // Close dialog
+
+                    if (response.statusCode == 201 || response.statusCode == 200) { // 201 is typical for created, 200 if it returns the object
+                      if (!mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Pedido creado correctamente')),
+                      );
+                      fetchOrders(); // Refresh the list
+                    } else {
+                      if (!mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error al crear pedido: ${response.body}')),
+                      );
+                    }
+                  } catch (e) {
+                    if (!mounted) return;
+                    Navigator.of(context).pop(); // Close dialog
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error de conexión: $e')),
+                    );
+                  }
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
