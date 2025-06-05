@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
-from app.schemas.routing_schema import RouteCreate, RouteOut
+from app.schemas.routing_schema import RouteCreate, RouteOut, RouteDriverUpdate
 from app.services.routing_service import RouteService
 from app.core.validators import (
     validate_driver,
@@ -82,3 +82,7 @@ async def complete_route(route_id: str):
 @router.get("/routes/active", response_model=List[RouteOut])
 def list_active_routes():
     return service.get_active()
+
+@router.patch("/routes/{route_id}/driver", response_model=RouteOut)
+async def assign_driver_to_route_endpoint(route_id: str, payload: RouteDriverUpdate):
+    return await service.assign_driver_to_route(route_id, payload.driver_id)

@@ -11,3 +11,6 @@ class RouteCreate(BaseModel):
 
 class RouteOut(RouteCreate):
     id: str
+
+class RouteDriverUpdate(BaseModel):
+    driver_id: str
