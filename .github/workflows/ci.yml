@@ -82,3 +82,12 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_PROJECT_KEY: ${{ secrets.PROJECT_KEY }}
         SONAR_ORGANIZATION: ${{ secrets.ORGANIZATION }}
+
+    - name: Build Docker images
+      run: docker-compose build
+
+    - name: Run Docker containers
+      run: docker-compose up -d
+
+    - name: Wait for services to be healthy
+      run: sleep 10

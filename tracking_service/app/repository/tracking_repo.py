@@ -42,3 +42,15 @@ def get_tracking_events_by_code(tracking_code: str) -> List[TrackingEvent]:
     ]
 
 
+def get_all_tracking_events() -> List[TrackingEvent]:
+    data = _load_data()
+    return [
+        TrackingEvent(
+            tracking_code=entry["tracking_code"],
+            status=entry["status"],
+            timestamp=datetime.fromisoformat(entry["timestamp"])
+        )
+        for entry in data
+    ]
+
+

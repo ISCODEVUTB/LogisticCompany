@@ -30,22 +30,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
     try {
       // Intenta obtener datos del backend
-      final response = widget.client != null
-          ? await widget.client!.get(Uri.parse('http://localhost:8002/orders'))
-          : await http.get(Uri.parse('http://localhost:8002/orders'));
-
-      // Simulating timeout for the widget.client != null case as well for consistency
-      // Note: Real timeout handling for a passed client would be more complex or assumed to be handled by the client's configuration.
-      // For this example, we'll assume the passed client handles its own timeouts or we simplify.
-      // If direct timeout application is needed, it would be:
-      // final response = await (widget.client != null
-      //     ? widget.client!.get(Uri.parse('http://localhost:8000/api/orders'))
-      //     : http.get(Uri.parse('http://localhost:8000/api/orders'))
-      // ).timeout(const Duration(seconds: 5));
-      // However, MockClient doesn't inherently support .timeout in the same way as a direct http.get future.
-      // So, we'll proceed without explicit timeout on the widget.client path for now, assuming the mock handles it.
-
-
+      final response = await http.get(Uri.parse('http://localhost:8000/api/orders/'));
       if (response.statusCode == 200) {
         setState(() {
           orders = json.decode(response.body);

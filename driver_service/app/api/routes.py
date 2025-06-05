@@ -35,6 +35,10 @@ def get_driver_by_id(driver_id: str):
 def get_all_drivers():
     return list_drivers()
 
+@router.get("", response_model=list[DriverResponseDTO])
+def get_all_drivers_alias():
+    return list_drivers()
+
 
 @router.patch("/{driver_id}", status_code=200)
 def update_driver(driver_id: str, dto: DriverUpdateDTO):

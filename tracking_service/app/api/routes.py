@@ -14,3 +14,11 @@ def track_package(data: TrackingEventCreate):
 @router.get("/track/{tracking_code}")
 def get_tracking_history(tracking_code: str):
     return service.get_history(tracking_code)
+
+@router.get("/", response_model=list)
+def get_all_events():
+    return service.get_all_events()
+
+@router.get("", response_model=list)
+def get_all_events_alias():
+    return service.get_all_events()

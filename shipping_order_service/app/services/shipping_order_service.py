@@ -1,6 +1,6 @@
 import uuid
-from datetime import datetime, timezone # Added timezone
-import logging # Added
+from datetime import datetime
+from app.repository.shipping_order_repo import get_all_orders
 
 from app.models.shipping_order import ShippingOrder
 from app.schemas.shipping_order_schema import (
@@ -131,3 +131,15 @@ def track_shipping_order(tracking_code: str) -> ShippingOrderResponseDTO | None:
 
 def generate_tracking_code() -> str:
     return f"TRK-{uuid.uuid4().hex[:10].upper()}"
+
+def get_all_shipping_orders():
+    orders = get_all_orders()  # Debe devolver una lista de ShippingOrder
+    return [
+        ShippingOrderResponseDTO(
+            order_id=o.order_id,
+            tracking_code=o.tracking_code,
+            status=o.status,
+            created_at=o.created_at
+        )
+        for o in orders
+    ]

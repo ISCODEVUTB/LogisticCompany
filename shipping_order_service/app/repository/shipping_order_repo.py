@@ -66,5 +66,8 @@ def cancel_order(order_id: str) -> Optional[dict]:
         order_data["status"] = "cancelled"
         order_data["updated_at"] = datetime.now(timezone.utc).isoformat()
         save_orders(orders)
-        return order_data
-    return None
+        return True
+    return False
+def get_all_orders():
+    orders = load_orders()
+    return [ShippingOrder(**data) for data in orders.values()]

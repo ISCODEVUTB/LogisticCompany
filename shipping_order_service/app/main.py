@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router as shipping_order_router
 
 app = FastAPI(
@@ -6,4 +7,19 @@ app = FastAPI(
     version="1.0.0"
 )
 
-app.include_router(shipping_order_router, prefix="", tags=["Orders"])
+# Configuración de CORS
+origins = [
+    "http://localhost:8080",
+    "http://localhost:8000",
+    # "https://tu-front-end.com",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(shipping_order_router, prefix="/api", tags=["Orders"])

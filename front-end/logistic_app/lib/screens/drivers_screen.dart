@@ -29,11 +29,9 @@ class _DriversScreenState extends State<DriversScreen> {
 
     try {
       // Intenta obtener datos del backend
-      final response = widget.client != null
-          ? await widget.client!.get(Uri.parse('http://localhost:8001/drivers'))
-          : await http.get(Uri.parse('http://localhost:8001/drivers'));
-      // Note: Timeout handling for injected client is simplified here, similar to OrdersScreen.
-
+      final response = await http.get(
+        Uri.parse('http://localhost:8001/api/drivers/'),
+      ).timeout(const Duration(seconds: 5));
       if (response.statusCode == 200) {
         setState(() {
           drivers = json.decode(response.body);
