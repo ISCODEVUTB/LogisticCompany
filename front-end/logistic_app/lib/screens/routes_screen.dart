@@ -152,6 +152,43 @@ class _RoutesScreenState extends State<RoutesScreen> {
                         },
                         style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
                       ),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.check_circle),
+                        label: const Text('Completar Ruta'),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                        onPressed: () async {
+                          final String routeId = route['id'];
+                          final BuildContext detailsDialogContext = context; // Capture context
+
+                          try {
+                            final uri = Uri.parse('http://localhost:8004/routes/$routeId/complete');
+                            final response = widget.client != null
+                                ? await widget.client!.patch(uri)
+                                : await http.patch(uri);
+
+                            if (!mounted) return;
+
+                            Navigator.of(detailsDialogContext).pop(); // Close details dialog
+
+                            if (response.statusCode == 200) {
+                              fetchRoutes(); // Refresh list
+                              ScaffoldMessenger.of(detailsDialogContext).showSnackBar( // Use captured context
+                                const SnackBar(content: Text('Ruta marcada como completada')),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(detailsDialogContext).showSnackBar( // Use captured context
+                                SnackBar(content: Text('Error al completar ruta: ${response.body}')),
+                              );
+                            }
+                          } catch (e) {
+                            if (!mounted) return;
+                             // Potentially pop dialog if it's still open and an error occurs before response
+                            ScaffoldMessenger.of(detailsDialogContext).showSnackBar( // Use captured context
+                              SnackBar(content: Text('Error de conexión al completar ruta: $e')),
+                            );
+                          }
+                        },
+                      ),
                     ],
                   ),
                 ],
@@ -205,25 +242,53 @@ class _RoutesScreenState extends State<RoutesScreen> {
 
     if (selectedDriver != null) {
       final String routeId = route['id'];
-      final String driverId = selectedDriver['id'];
+      final String driverId = selectedDriver['id']; // Assuming selectedDriver has an 'id' field
       debugPrint('Assigning Driver ID: $driverId to Route ID: $routeId');
+
+      // Capture the context for use after async operations if mounted
+      final currentContext = context; // Assuming 'context' is the BuildContext of _showDriverSelectionDialog
+
       try {
-        final assignResponse = widget.client != null
-            ? await widget.client!.patch( Uri.parse('http://localhost:8004/routes/$routeId/assign-driver'), headers: {'Content-Type': 'application/json; charset=utf-8'}, body: json.encode({'driver_id': driverId}))
-            : await http.patch( Uri.parse('http://localhost:8004/routes/$routeId/assign-driver'), headers: {'Content-Type': 'application/json; charset=utf-8'}, body: json.encode({'driver_id': driverId}));
-        if (!mounted) return; // Changed from context.mounted
-        if (assignResponse.statusCode == 200) {
-          debugPrint('Driver assigned successfully to route $routeId');
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Conductor asignado correctamente')));
-          fetchRoutes();
+        final uri = Uri.parse('http://localhost:8004/routes/$routeId/driver');
+        final headers = {'Content-Type': 'application/json; charset=utf-8'};
+        final body = json.encode({'driver_id': driverId});
+
+        final response = widget.client != null
+            ? await widget.client!.patch(uri, headers: headers, body: body)
+            : await http.patch(uri, headers: headers, body: body);
+
+        // Check mounted before using context after await
+        // This check should ideally use a State's mounted property,
+        // but since this is a method, we rely on the calling widget being mounted.
+        // For robust_ness, if _showDriverSelectionDialog is part of a State<StatefulWidget>,
+        // it's better to check that State's mounted property.
+        // However, given the current structure, we'll proceed with a direct context check if possible,
+        // or rely on the try-catch to handle cases where context might be invalid.
+
+        if (response.statusCode == 200) { // Backend now returns 200 with updated route
+          if (!Navigator.of(currentContext).mounted) return; // Check before using context
+          Navigator.of(currentContext).pop(selectedDriver); // Close driver selection dialog, pass back selected driver
+
+          // Potentially pop the details dialog as well, or let the caller handle it.
+          // For now, just pop the selection dialog.
+          // The caller of _showDriverSelectionDialog would then call fetchRoutes().
+
+          ScaffoldMessenger.of(this.context).showSnackBar( // Assuming 'this.context' is the main screen's context
+            const SnackBar(content: Text('Conductor asignado a la ruta.')),
+          );
+          fetchRoutes(); // Refresh the routes list on the main scr
+          
         } else {
-          debugPrint('Failed to assign driver. Status: ${assignResponse.statusCode}, Body: ${assignResponse.body}');
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al asignar conductor: ${assignResponse.body}')));
+          if (!Navigator.of(currentContext).mounted) return;
+           ScaffoldMessenger.of(this.context).showSnackBar( // Use main screen's context
+            SnackBar(content: Text('Error al asignar conductor: ${response.body} (Status: ${response.statusCode})')),
+          );
         }
       } catch (e) {
-        if (!mounted) return; // Changed from context.mounted
-        debugPrint('Error assigning driver: $e');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error de conexión al asignar conductor: $e')));
+        if (!Navigator.of(currentContext).mounted) return;
+         ScaffoldMessenger.of(this.context).showSnackBar( // Use main screen's context
+          SnackBar(content: Text('Error de conexión al asignar conductor: $e')),
+        );
       }
     }
   }
