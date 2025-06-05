@@ -31,8 +31,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
     try {
       // Intenta obtener datos del backend
       final response = widget.client != null
-          ? await widget.client!.get(Uri.parse('http://localhost:8000/api/orders'))
-          : await http.get(Uri.parse('http://localhost:8000/api/orders'));
+          ? await widget.client!.get(Uri.parse('http://localhost:8002/orders'))
+          : await http.get(Uri.parse('http://localhost:8002/orders'));
 
       // Simulating timeout for the widget.client != null case as well for consistency
       // Note: Real timeout handling for a passed client would be more complex or assumed to be handled by the client's configuration.
@@ -164,14 +164,82 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 _buildDetailRow('Conductor', order['driver']),
                 _buildDetailRow('Entrega estimada', order['estimatedDelivery']),
                 const SizedBox(height: 20),
-                const Text('Acciones', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                // Dropdown and button for status update
+                Builder( // Use Builder to get a context within the Dialog for ScaffoldMessenger
+                  builder: (dialogContext) {
+                    String? newSelectedStatus = order['status']; // Initialize with current status
+                    final List<String> possibleStatuses = ['Pendiente', 'En preparación', 'En tránsito', 'Entregado', 'Cancelado'];
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        DropdownButtonFormField<String>(
+                          value: newSelectedStatus,
+                          hint: const Text('Seleccionar nuevo estado'),
+                          items: possibleStatuses
+                              .map((status) => DropdownMenuItem<String>(
+                                    value: status,
+                                    child: Text(status),
+                                  ))
+                              .toList(),
+                          onChanged: (String? value) {
+                            newSelectedStatus = value;
+                          },
+                          decoration: const InputDecoration(labelText: 'Nuevo Estado del Pedido'),
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          child: const Text('Actualizar Estado'),
+                          onPressed: () async {
+                            if (newSelectedStatus == null || newSelectedStatus == order['status']) {
+                              ScaffoldMessenger.of(dialogContext).showSnackBar(
+                                const SnackBar(content: Text('No se ha seleccionado un nuevo estado o el estado es el mismo.')),
+                              );
+                              return;
+                            }
+                            final String orderId = order['id'];
+                            final String statusToUpdate = newSelectedStatus!;
+
+                            try {
+                              final uri = Uri.parse('http://localhost:8002/orders/$orderId/status?status=$statusToUpdate');
+                              final response = widget.client != null
+                                  ? await widget.client!.patch(uri)
+                                  : await http.patch(uri);
+
+                              if (!mounted) return;
+
+                              if (response.statusCode == 200 || response.statusCode == 204) {
+                                Navigator.of(context).pop(); // Close the details dialog
+                                fetchOrders(); // Refresh the list
+                                ScaffoldMessenger.of(context).showSnackBar( // Use main context for SnackBar after dialog is closed
+                                  const SnackBar(content: Text('Estado actualizado correctamente')),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(dialogContext).showSnackBar( // Use dialog context for SnackBar if dialog is still open
+                                  SnackBar(content: Text('Error al actualizar estado: ${response.body}')),
+                                );
+                              }
+                            } catch (e) {
+                              if (!mounted) return;
+                               ScaffoldMessenger.of(dialogContext).showSnackBar(
+                                SnackBar(content: Text('Error de conexión: $e')),
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    );
+                  }
+                ),
+                const SizedBox(height: 20),
+                const Text('Otras Acciones', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton.icon(
                       icon: const Icon(Icons.edit),
-                      label: const Text('Editar'),
+                      label: const Text('Editar (Placeholder)'),
                       onPressed: () {
                         Navigator.pop(context);
                         // Aquí iría la navegación a la pantalla de edición
@@ -179,6 +247,68 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                       ),
+                    ),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.cancel),
+                      label: const Text('Cancelar Pedido'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      onPressed: () {
+                        // Store the details dialog context
+                        final BuildContext detailsDialogContext = context;
+                        showDialog(
+                          context: detailsDialogContext, // Use details dialog's context to show confirmation on top
+                          builder: (BuildContext confirmDialogContext) { // This is the context for the confirmation dialog itself
+                            return AlertDialog(
+                              title: const Text('Confirmar Cancelación'),
+                              content: const Text('¿Está seguro de que desea cancelar este pedido? Esta acción no se puede deshacer.'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('No'),
+                                  onPressed: () {
+                                    Navigator.of(confirmDialogContext).pop(); // Close confirmation dialog
+                                  },
+                                ),
+                                TextButton(
+                                  child: const Text('Sí'),
+                                  onPressed: () async {
+                                    final String orderId = order['id'];
+                                    try {
+                                      final uri = Uri.parse('http://localhost:8002/orders/$orderId/cancel');
+                                      final response = widget.client != null
+                                          ? await widget.client!.post(uri) // Assuming POST for cancel as per backend
+                                          : await http.post(uri);
+
+                                      if (!mounted) return;
+
+                                      Navigator.of(confirmDialogContext).pop(); // Close confirmation dialog
+
+                                      if (response.statusCode == 200 || response.statusCode == 204) {
+                                        Navigator.of(detailsDialogContext).pop(); // Close details dialog
+                                        fetchOrders(); // Refresh list
+                                        ScaffoldMessenger.of(detailsDialogContext).showSnackBar( // Or use the main screen's context if detailsDialogContext is problematic after pop
+                                          const SnackBar(content: Text('Pedido cancelado correctamente')),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(detailsDialogContext).showSnackBar(
+                                          SnackBar(content: Text('Error al cancelar pedido: ${response.body}')),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      if (!mounted) return;
+                                      Navigator.of(confirmDialogContext).pop(); // Close confirmation dialog on error too
+                                      ScaffoldMessenger.of(detailsDialogContext).showSnackBar(
+                                        SnackBar(content: Text('Error de conexión al cancelar: $e')),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
                     ),
                     ElevatedButton.icon(
                       icon: const Icon(Icons.location_on),
@@ -394,10 +524,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   void _showCreateOrderDialog() {
     final formKey = GlobalKey<FormState>();
-    String cliente = '';
-    String origen = '';
-    String destino = '';
-    String peso = ''; // Assuming weight is entered as string then parsed
+    String senderName = '';
+    String senderAddress = '';
+    String senderPhone = '';
+    String receiverName = '';
+    String receiverAddress = '';
+    String receiverPhone = '';
+    String pickupDateRaw = '';
+    String packageWeight = '';
+    String packageDimensions = '';
 
     showDialog(
       context: context,
@@ -411,29 +546,59 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   TextFormField(
-                    key: const Key('input_cliente'),
-                    decoration: const InputDecoration(labelText: 'Cliente'),
-                    validator: (value) => value == null || value.isEmpty ? 'Ingrese el cliente' : null,
-                    onSaved: (value) => cliente = value!,
+                    key: const Key('input_sender_name'),
+                    decoration: const InputDecoration(labelText: 'Nombre Remitente'),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese el nombre del remitente' : null,
+                    onSaved: (value) => senderName = value!,
                   ),
                   TextFormField(
-                    key: const Key('input_origen'),
-                    decoration: const InputDecoration(labelText: 'Origen'),
-                    validator: (value) => value == null || value.isEmpty ? 'Ingrese el origen' : null,
-                    onSaved: (value) => origen = value!,
+                    key: const Key('input_sender_address'),
+                    decoration: const InputDecoration(labelText: 'Dirección Remitente'),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese la dirección del remitente' : null,
+                    onSaved: (value) => senderAddress = value!,
                   ),
                   TextFormField(
-                    key: const Key('input_destino'),
-                    decoration: const InputDecoration(labelText: 'Destino'),
-                    validator: (value) => value == null || value.isEmpty ? 'Ingrese el destino' : null,
-                    onSaved: (value) => destino = value!,
+                    key: const Key('input_sender_phone'),
+                    decoration: const InputDecoration(labelText: 'Teléfono Remitente'),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese el teléfono del remitente' : null,
+                    onSaved: (value) => senderPhone = value!,
                   ),
                   TextFormField(
-                    key: const Key('input_peso'),
-                    decoration: const InputDecoration(labelText: 'Peso (kg)'),
+                    key: const Key('input_receiver_name'),
+                    decoration: const InputDecoration(labelText: 'Nombre Destinatario'),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese el nombre del destinatario' : null,
+                    onSaved: (value) => receiverName = value!,
+                  ),
+                  TextFormField(
+                    key: const Key('input_receiver_address'),
+                    decoration: const InputDecoration(labelText: 'Dirección Destinatario'),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese la dirección del destinatario' : null,
+                    onSaved: (value) => receiverAddress = value!,
+                  ),
+                  TextFormField(
+                    key: const Key('input_receiver_phone'),
+                    decoration: const InputDecoration(labelText: 'Teléfono Destinatario'),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese el teléfono del destinatario' : null,
+                    onSaved: (value) => receiverPhone = value!,
+                  ),
+                  TextFormField(
+                    key: const Key('input_pickup_date'),
+                    decoration: const InputDecoration(labelText: 'Fecha Recogida (YYYY-MM-DD HH:MM:SS)'),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese la fecha de recogida' : null,
+                    onSaved: (value) => pickupDateRaw = value!,
+                  ),
+                  TextFormField(
+                    key: const Key('input_peso'), // Reuse key if it makes sense, or create 'input_package_weight'
+                    decoration: const InputDecoration(labelText: 'Peso Paquete (kg)'),
                     keyboardType: TextInputType.number,
-                    validator: (value) => value == null || value.isEmpty ? 'Ingrese el peso' : null,
-                    onSaved: (value) => peso = value!,
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese el peso del paquete' : null,
+                    onSaved: (value) => packageWeight = value!,
+                  ),
+                  TextFormField(
+                    key: const Key('input_package_dimensions'),
+                    decoration: const InputDecoration(labelText: 'Dimensiones Paquete (LxWxH)'),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese las dimensiones del paquete' : null,
+                    onSaved: (value) => packageDimensions = value!,
                   ),
                 ],
               ),
@@ -453,36 +618,45 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 if (formKey.currentState!.validate()) {
                   formKey.currentState!.save();
 
-                  // Prepare data for POST request
-                  // This structure needs to match what your backend expects
-                  final orderData = {
-                    'customer': cliente, // Assuming backend expects 'customer'
-                    'origin': origen,
-                    'destination': destino,
-                    'package': { // Assuming package details are nested
-                       'weight': double.tryParse(peso) ?? 0.0,
-                       // Add other package details if needed by backend e.g. dimensions
-                    },
-                    // Add other fields your backend expects for order creation:
-                    // e.g., 'pickup_date', 'sender_details', 'receiver_details'
-                    // For now, keeping it simple based on form fields.
-                    'status': 'Pendiente', // Default status
-                    'date': DateTime.now().toIso8601String().substring(0,10), // Today's date
-                    'items': 1, // Example
-                    'driver': 'Pendiente asignación',
-                    'estimatedDelivery': DateTime.now().add(const Duration(days:3)).toIso8601String().substring(0,10)
+                  String pickupDateISO = '';
+                  try {
+                    // Assuming pickupDateRaw is "YYYY-MM-DD HH:MM:SS"
+                    DateTime parsedDate = DateTime.parse(pickupDateRaw.replaceFirst(' ', 'T'));
+                    pickupDateISO = '${parsedDate.toIso8601String()}Z'; // Append Z for UTC
+                  } catch (e) {
+                    // Handle parsing error, maybe show a message to the user
+                    debugPrint("Error parsing date: $e");
+                    // For now, let it proceed, backend might catch it or use a default
+                  }
 
+
+                  final orderData = {
+                    "sender": {
+                      "name": senderName,
+                      "address": senderAddress,
+                      "phone": senderPhone
+                    },
+                    "receiver": {
+                      "name": receiverName,
+                      "address": receiverAddress,
+                      "phone": receiverPhone
+                    },
+                    "pickup_date": pickupDateISO,
+                    "package": {
+                      "weight": double.tryParse(packageWeight) ?? 0.0,
+                      "dimensions": packageDimensions
+                    }
                   };
 
                   try {
                     final response = widget.client != null
                         ? await widget.client!.post(
-                            Uri.parse('http://localhost:8000/api/orders'),
+                            Uri.parse('http://localhost:8002/orders'),
                             headers: {'Content-Type': 'application/json; charset=utf-8'},
                             body: json.encode(orderData),
                           )
                         : await http.post(
-                            Uri.parse('http://localhost:8000/api/orders'),
+                            Uri.parse('http://localhost:8002/orders'),
                             headers: {'Content-Type': 'application/json; charset=utf-8'},
                             body: json.encode(orderData),
                           );

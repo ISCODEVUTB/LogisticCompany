@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 import uuid
+from typing import Optional
 
 DB_FILE = Path("app/repository/routes.json")
 
@@ -30,6 +31,7 @@ def create_route(route_data):
         "driver_id": route_data['driver_id'],
         "order_ids": route_data['order_ids'],
         "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
         "status": "in_progress"
     }
     routes[route_id] = new_route
@@ -58,3 +60,16 @@ def mark_route_completed(route_id: str) -> bool:
 def get_active_routes():
     routes = load_routes()
     return [route for route in routes.values() if route.get("status") != "completed"]
+
+def get_route_by_id(route_id: str) -> Optional[dict]:
+    routes = load_routes()
+    return routes.get(route_id)
+
+def update_route_driver_assignment(route_id: str, new_driver_id: Optional[str]) -> Optional[dict]:
+    routes = load_routes()
+    if route_id in routes:
+        routes[route_id]['driver_id'] = new_driver_id
+        routes[route_id]['updated_at'] = datetime.now(timezone.utc).isoformat()
+        save_routes(routes)
+        return routes[route_id]
+    return None
