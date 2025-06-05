@@ -58,8 +58,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> _fetchDashboardData() async {
     try {
       final response = widget.client != null
-          ? await widget.client!.get(Uri.parse('http://localhost:8000/api/dashboard'))
-          : await http.get(Uri.parse('http://localhost:8000/api/dashboard'));
+          ? await widget.client!.get(Uri.parse('http://localhost:8000/api/dashboard_disabled'))
+          : await http.get(Uri.parse('http://localhost:8000/api/dashboard_disabled'));
       
       if (response.statusCode == 200) {
         final Map<String, dynamic> parsedData = json.decode(response.body);
