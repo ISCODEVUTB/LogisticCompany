@@ -46,24 +46,7 @@ jobs:
     - name: Run tests with coverage
       run: |
         export PYTHONPATH=$PYTHONPATH:$(pwd)
-        cd shipping_order_service && python -m pytest test/ --cov=. --cov-report=term --cov-report=xml:../shipping_coverage.xml
-        mv .coverage ../.coverage.shipping
-        
-        cd ../driver_service && python -m pytest test/ --cov=. --cov-report=term --cov-report=xml:../driver_coverage.xml
-        mv .coverage ../.coverage.driver
-        
-        cd ../routing_service && python -m pytest test/ --cov=. --cov-report=term --cov-report=xml:../routing_coverage.xml
-        mv .coverage ../.coverage.routing
-        
-        cd ../tracking_service && python -m pytest test/ --cov=. --cov-report=term --cov-report=xml:../tracking_coverage.xml
-        mv .coverage ../.coverage.tracking
-        
-        cd ..
-
-    - name: Combine coverage reports
-      run: |
-        coverage combine .coverage.shipping .coverage.driver .coverage.routing .coverage.tracking
-        coverage xml -o coverage.xml
+        python -m pytest --cov=. --cov-report=xml
 
        
     - name: Check coverage file
@@ -75,8 +58,6 @@ jobs:
         projectBaseDir: .
         args: >
           -Dsonar.python.coverage.reportPaths=coverage.xml
-          -Dsonar.sources=shipping_order_service,driver_service,routing_service,tracking_service
-          -Dsonar.tests=shipping_order_service/test,driver_service/test,routing_service/test,tracking_service/test
           -Dsonar.python.xunit.reportPath=test-results.xml
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

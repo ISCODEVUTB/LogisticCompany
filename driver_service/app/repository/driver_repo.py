@@ -1,14 +1,23 @@
 import json
-from pathlib import Path
-from typing import Optional, Dict
 from datetime import datetime, timezone
-from app.models.driver import Driver
+from pathlib import Path
+from typing import Dict, Optional
+
+from ..models.driver import Driver
 
 # Ruta del archivo JSON
 DB_FILE = Path(__file__).parent / "drivers.json"
 
 # Define a set of allowed keys for Driver model initialization
-ALLOWED_DRIVER_KEYS = {'driver_id', 'name', 'license_id', 'phone', 'status', 'created_at', 'updated_at'}
+ALLOWED_DRIVER_KEYS = {
+    "driver_id",
+    "name",
+    "license_id",
+    "phone",
+    "status",
+    "created_at",
+    "updated_at",
+}
 
 
 def load_drivers() -> Dict[str, dict]:
@@ -40,21 +49,29 @@ def get_driver_by_id(driver_id: str) -> Optional[Driver]:
     if data:
         # Filter keys to prevent TypeError during Driver instantiation
         filtered_data = {key: data[key] for key in data if key in ALLOWED_DRIVER_KEYS}
-        
+
         # Convert string dates to datetime objects
-        if 'created_at' in filtered_data and isinstance(filtered_data['created_at'], str):
+        if "created_at" in filtered_data and isinstance(
+            filtered_data["created_at"], str
+        ):
             try:
-                filtered_data['created_at'] = datetime.fromisoformat(filtered_data['created_at'])
+                filtered_data["created_at"] = datetime.fromisoformat(
+                    filtered_data["created_at"]
+                )
             except ValueError:
                 # Handle or log error if date format is unexpectedly wrong
-                pass 
-        if 'updated_at' in filtered_data and isinstance(filtered_data['updated_at'], str):
+                pass
+        if "updated_at" in filtered_data and isinstance(
+            filtered_data["updated_at"], str
+        ):
             try:
-                filtered_data['updated_at'] = datetime.fromisoformat(filtered_data['updated_at'])
+                filtered_data["updated_at"] = datetime.fromisoformat(
+                    filtered_data["updated_at"]
+                )
             except ValueError:
                 # Handle or log error
                 pass
-        
+
         return Driver(**filtered_data)
     return None
 
@@ -64,22 +81,32 @@ def get_all_drivers() -> list[Driver]:
     result = []
     for data_value in drivers_data.values():
         # Filter keys
-        filtered_data = {key: data_value[key] for key in data_value if key in ALLOWED_DRIVER_KEYS}
-        
+        filtered_data = {
+            key: data_value[key] for key in data_value if key in ALLOWED_DRIVER_KEYS
+        }
+
         # Convert string dates to datetime objects
-        if 'created_at' in filtered_data and isinstance(filtered_data['created_at'], str):
+        if "created_at" in filtered_data and isinstance(
+            filtered_data["created_at"], str
+        ):
             try:
-                filtered_data['created_at'] = datetime.fromisoformat(filtered_data['created_at'])
-            except ValueError:
-                # Handle or log error
-                pass 
-        if 'updated_at' in filtered_data and isinstance(filtered_data['updated_at'], str):
-            try:
-                filtered_data['updated_at'] = datetime.fromisoformat(filtered_data['updated_at'])
+                filtered_data["created_at"] = datetime.fromisoformat(
+                    filtered_data["created_at"]
+                )
             except ValueError:
                 # Handle or log error
                 pass
-        
+        if "updated_at" in filtered_data and isinstance(
+            filtered_data["updated_at"], str
+        ):
+            try:
+                filtered_data["updated_at"] = datetime.fromisoformat(
+                    filtered_data["updated_at"]
+                )
+            except ValueError:
+                # Handle or log error
+                pass
+
         result.append(Driver(**filtered_data))
     return result
 

@@ -14,7 +14,7 @@ class ShippingOrder:
         status: str = "created",
         delivery_date: Optional[datetime] = None,
         created_at: Optional[datetime] = None,
-        updated_at: Optional[datetime] = None
+        updated_at: Optional[datetime] = None,
     ):
         self.order_id = order_id
         self.tracking_code = tracking_code

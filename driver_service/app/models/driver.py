@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+
 class Driver:
     def __init__(
         self,
@@ -9,7 +10,7 @@ class Driver:
         phone: str,
         status: str = "available",
         created_at: datetime = None,
-        updated_at: datetime = None
+        updated_at: datetime = None,
     ):
         self.driver_id = driver_id
         self.name = name

@@ -1,0 +1,43 @@
+{
+    "220ad684-5e0e-48b4-bc06-76f746948086": {
+        "id": "220ad684-5e0e-48b4-bc06-76f746948086",
+        "origin": "Test Origin",
+        "destination": "Test Destination",
+        "estimated_time": 30,
+        "distance_km": 5.0,
+        "driver_id": "driver-x",
+        "order_ids": [
+            "order-3"
+        ],
+        "created_at": "2025-06-05T23:11:22.094362+00:00",
+        "updated_at": "2025-06-05T23:11:22.094373+00:00",
+        "status": "in_progress"
+    },
+    "9b7b43cd-8997-4e7f-a229-833f82c0c2c8": {
+        "id": "9b7b43cd-8997-4e7f-a229-833f82c0c2c8",
+        "origin": "Central Hub",
+        "destination": "North Branch",
+        "estimated_time": 120,
+        "distance_km": 25.0,
+        "driver_id": "driver123",
+        "order_ids": [
+            "order1",
+            "order2"
+        ],
+        "created_at": "2025-06-05T23:11:22.105652+00:00",
+        "updated_at": "2025-06-05T23:11:22.105663+00:00",
+        "status": "in_progress"
+    },
+    "98c5964f-5376-463a-83bf-8f0ab85284c4": {
+        "id": "98c5964f-5376-463a-83bf-8f0ab85284c4",
+        "origin": "Bodega Central",
+        "destination": "Sucursal Norte",
+        "estimated_time": 45,
+        "distance_km": 12.5,
+        "driver_id": null,
+        "order_ids": [],
+        "created_at": "2025-06-05T23:11:22.129401+00:00",
+        "updated_at": "2025-06-05T23:11:22.129411+00:00",
+        "status": "in_progress"
+    }
+}

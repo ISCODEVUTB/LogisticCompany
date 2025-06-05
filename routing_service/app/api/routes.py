@@ -1,16 +1,16 @@
-from fastapi import APIRouter, HTTPException
 from typing import List
-from app.schemas.routing_schema import RouteCreate, RouteOut, RouteDriverUpdate
-from app.services.routing_service import RouteService
-from app.core.validators import (
-    validate_driver,
-    validate_orders,
-    notify_driver_assignment,
-    update_order_statuses
-)
+
+from fastapi import APIRouter, HTTPException
+
+from ..core.validators import (notify_driver_assignment,
+                                 update_order_statuses, validate_driver,
+                                 validate_orders)
+from ..schemas.routing_schema import RouteCreate, RouteDriverUpdate, RouteOut
+from ..services.routing_service import RouteService
 
 router = APIRouter()
 service = RouteService()
+
 
 @router.post("/routes/", response_model=RouteOut)
 async def create_route_endpoint(data: RouteCreate):
@@ -29,13 +29,17 @@ async def create_route_endpoint(data: RouteCreate):
     if data.driver_id:
         success = await notify_driver_assignment(data.driver_id, route["id"])
         if not success:
-            raise HTTPException(status_code=500, detail="Failed to assign route to driver")
+            raise HTTPException(
+                status_code=500, detail="Failed to assign route to driver"
+            )
 
     # Actualizar estado de pedidos
     if data.order_ids:
         success = await update_order_statuses(data.order_ids, status="assigned")
         if not success:
-            raise HTTPException(status_code=500, detail="Failed to update order statuses")
+            raise HTTPException(
+                status_code=500, detail="Failed to update order statuses"
+            )
 
     return route
 
@@ -43,6 +47,7 @@ async def create_route_endpoint(data: RouteCreate):
 @router.get("/routes/", response_model=List[RouteOut])
 def list_routes():
     return service.get_all()
+
 
 @router.get("/routes", response_model=List[RouteOut])
 def list_routes_alias():
@@ -54,6 +59,7 @@ def delete_route(route_id: str):
     if service.delete(route_id):
         return {"message": f"Route {route_id} deleted"}
     raise HTTPException(status_code=404, detail="Route not found")
+
 
 @router.patch("/routes/{route_id}/complete")
 async def complete_route(route_id: str):
@@ -68,11 +74,15 @@ async def complete_route(route_id: str):
     if route["order_ids"]:
         success = await update_order_statuses(route["order_ids"], status="delivered")
         if not success:
-            raise HTTPException(status_code=500, detail="Failed to update order statuses")
+            raise HTTPException(
+                status_code=500, detail="Failed to update order statuses"
+            )
 
     # Notificar al driver_service que está disponible
     if route.get("driver_id"):
-        notify_success = await notify_driver_assignment(route["driver_id"], None)  # limpiamos asignación
+        notify_success = await notify_driver_assignment(
+            route["driver_id"], None
+        )  # limpiamos asignación
         if not notify_success:
             raise HTTPException(status_code=500, detail="Failed to update route")
 
@@ -83,9 +93,11 @@ async def complete_route(route_id: str):
 
     return {"message": f"Route {route_id} completed successfully"}
 
+
 @router.get("/routes/active", response_model=List[RouteOut])
 def list_active_routes():
     return service.get_active()
+
 
 @router.patch("/routes/{route_id}/driver", response_model=RouteOut)
 async def assign_driver_to_route_endpoint(route_id: str, payload: RouteDriverUpdate):

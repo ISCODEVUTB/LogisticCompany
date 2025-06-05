@@ -1,8 +1,9 @@
 import json
 import os
-from typing import List
-from app.models.tracking import TrackingEvent
 from datetime import datetime
+from typing import List
+
+from ..models.tracking import TrackingEvent
 
 DATA_FILE = "app/repository/tracking.json"
 
@@ -21,11 +22,13 @@ def _save_data(data: List[dict]):
 
 def save_tracking_event(event: TrackingEvent):
     data = _load_data()
-    data.append({
-        "tracking_code": event.tracking_code,
-        "status": event.status,
-        "timestamp": event.timestamp.isoformat()
-    })
+    data.append(
+        {
+            "tracking_code": event.tracking_code,
+            "status": event.status,
+            "timestamp": event.timestamp.isoformat(),
+        }
+    )
     _save_data(data)
 
 
@@ -35,7 +38,7 @@ def get_tracking_events_by_code(tracking_code: str) -> List[TrackingEvent]:
         TrackingEvent(
             tracking_code=entry["tracking_code"],
             status=entry["status"],
-            timestamp=datetime.fromisoformat(entry["timestamp"])
+            timestamp=datetime.fromisoformat(entry["timestamp"]),
         )
         for entry in data
         if entry["tracking_code"] == tracking_code
@@ -48,9 +51,7 @@ def get_all_tracking_events() -> List[TrackingEvent]:
         TrackingEvent(
             tracking_code=entry["tracking_code"],
             status=entry["status"],
-            timestamp=datetime.fromisoformat(entry["timestamp"])
+            timestamp=datetime.fromisoformat(entry["timestamp"]),
         )
         for entry in data
     ]
-
-

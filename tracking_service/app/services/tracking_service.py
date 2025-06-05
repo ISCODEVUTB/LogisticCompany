@@ -1,13 +1,17 @@
-from app.models.tracking import TrackingEvent
-from app.schemas.tracking_schemas import TrackingEventCreate, TrackingHistoryOut, TrackingEventOut
-from app.repository.tracking_repo import save_tracking_event, get_tracking_events_by_code, get_all_tracking_events
+from ..models.tracking import TrackingEvent
+from ..repository.tracking_repo import (get_all_tracking_events,
+                                        get_tracking_events_by_code,
+                                        save_tracking_event)
+from ..schemas.tracking_schemas import (TrackingEventCreate, TrackingEventOut,
+                                        TrackingHistoryOut)
+
 
 class TrackingService:
     def add_tracking_event(self, data: TrackingEventCreate):
         event = TrackingEvent(
             tracking_code=data.tracking_code,
             status=data.status,
-            timestamp=data.timestamp
+            timestamp=data.timestamp,
         )
         save_tracking_event(event)
         return {"message": "Tracking event recorded"}

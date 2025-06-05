@@ -1,5 +1,6 @@
-from app.services.routing_service import RouteService
-from app.schemas.routing_schema import RouteCreate
+from routing_service.app.schemas.routing_schema import RouteCreate
+from routing_service.app.services.routing_service import RouteService
+
 
 def test_create_route_success():
     # Arrange
@@ -10,7 +11,7 @@ def test_create_route_success():
         estimated_time=45,
         distance_km=12.5,
         driver_id=None,
-        order_ids=[]
+        order_ids=[],
     )
 
     # Act
