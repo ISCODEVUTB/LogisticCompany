@@ -267,11 +267,9 @@ class _RoutesScreenState extends State<RoutesScreen> {
         // However, given the current structure, we'll proceed with a direct context check if possible,
         // or rely on the try-catch to handle cases where context might be invalid.
 
-        if (response.statusCode == 200) { // Backend now returns 200 with updated route
-          if (!Navigator.of(currentContext).mounted) return; // Check before using context
-          // ignore: use_build_context_synchronously
-          Navigator.of(currentContext).pop(selectedDriver); // Close driver selection dialog, pass back selected driver
-
+          if (needToPopDialog && Navigator.of(currentContext).mounted) {
+            Navigator.of(currentContext).pop(driverToReturn);
+          }
           // Potentially pop the details dialog as well, or let the caller handle it.
           // For now, just pop the selection dialog.
           // The caller of _showDriverSelectionDialog would then call fetchRoutes().
