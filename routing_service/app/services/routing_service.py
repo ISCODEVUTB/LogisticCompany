@@ -1,6 +1,18 @@
-from app.repository.routing_repo import create_route, get_all_routes, delete_route, mark_route_completed, get_active_routes
+from app.repository.routing_repo import (
+    create_route,
+    get_all_routes,
+    delete_route,
+    mark_route_completed,
+    get_active_routes,
+    get_route_by_id,             # Added
+    update_route_driver_assignment # Added
+)
 from app.schemas.routing_schema import RouteCreate
 from pydantic import BaseModel
+from app.core.validators import validate_driver, notify_driver_assignment # Added
+from fastapi import HTTPException # Added
+from typing import Optional # Added
+
 
 class RouteService:
     def create(self, route_data: RouteCreate):
@@ -21,3 +33,30 @@ class RouteService:
     
     def get_active(self):
         return get_active_routes()
+
+    async def assign_driver_to_route(self, route_id: str, new_driver_id: str) -> dict:
+        route = get_route_by_id(route_id)
+        if not route:
+            raise HTTPException(status_code=404, detail="Route not found")
+
+        if not await validate_driver(new_driver_id):
+            raise HTTPException(status_code=400, detail="New driver not found or invalid")
+
+        old_driver_id: Optional[str] = route.get('driver_id')
+
+        updated_route = update_route_driver_assignment(route_id, new_driver_id)
+        if not updated_route:
+            # This case should ideally not happen if route was found before.
+            raise HTTPException(status_code=500, detail="Failed to update route's driver assignment in repository")
+
+        if old_driver_id and old_driver_id != new_driver_id:
+            if not await notify_driver_assignment(old_driver_id, None):
+                # Log this failure, but proceed as the route's driver_id is already updated.
+                print(f"Warning: Failed to notify old driver {old_driver_id} of unassignment from route {route_id}")
+
+        if new_driver_id:
+            if not await notify_driver_assignment(new_driver_id, route_id):
+                # This is a significant issue.
+                raise HTTPException(status_code=500, detail=f"Route driver updated to {new_driver_id}, but failed to notify driver service.")
+
+        return updated_route
