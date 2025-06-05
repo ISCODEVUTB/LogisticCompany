@@ -168,38 +168,52 @@ class _RoutesScreenState extends State<RoutesScreen> {
                                 ? await widget.client!.patch(uri)
                                 : await http.patch(uri);
 
-                            if (!mounted) return;
+                            if (!mounted) {
+                              return;
+                            }
 
                             // Pop dialog first
                             // Navigator.of(detailsDialogContext).pop();
-                            if (mounted) dialogNavigator.pop();
+                            if (mounted) {
+                              dialogNavigator.pop();
+                            }
 
                             if (response.statusCode == 200) {
                               fetchRoutes(); // Refresh list
-                              if (!mounted) return; // Check mounted again before using this.context
+                              if (!mounted) {
+                                return; // Check mounted again before using this.context
+                              }
                               // ScaffoldMessenger.of(this.context).showSnackBar(
                               //   const SnackBar(content: Text('Ruta marcada como completada')),
                               // );
-                              if (mounted) scaffoldMessenger.showSnackBar(
-                                const SnackBar(content: Text('Ruta marcada como completada')),
-                              );
+                              if (mounted) {
+                                scaffoldMessenger.showSnackBar(
+                                  const SnackBar(content: Text('Ruta marcada como completada')),
+                                );
+                              }
                             } else {
-                              if (!mounted) return;
+                              if (!mounted) {
+                                return;
+                              }
                               // ScaffoldMessenger.of(this.context).showSnackBar(
                               //   SnackBar(content: Text('Error al completar ruta: ${response.body}')),
                               // );
-                              if (mounted) scaffoldMessenger.showSnackBar(
-                                SnackBar(content: Text('Error al completar ruta: ${response.body}')),
-                              );
+                              if (mounted) {
+                                scaffoldMessenger.showSnackBar(
+                                  SnackBar(content: Text('Error al completar ruta: ${response.body}')),
+                                );
+                              }
                             }
                           } catch (e) {
                             // if (!mounted) return;
                             // ScaffoldMessenger.of(context).showSnackBar(
                             //   SnackBar(content: Text('Error de conexión al completar ruta: $e')),
                             // );
-                            if (mounted) scaffoldMessenger.showSnackBar( // Assuming context here refers to the State's context due to scaffoldMessenger definition
-                              SnackBar(content: Text('Error de conexión al completar ruta: $e')),
-                            );
+                            if (mounted) {
+                              scaffoldMessenger.showSnackBar( // Assuming context here refers to the State's context due to scaffoldMessenger definition
+                                SnackBar(content: Text('Error de conexión al completar ruta: $e')),
+                              );
+                            }
                           }
                         },
                       ),
@@ -261,8 +275,10 @@ class _RoutesScreenState extends State<RoutesScreen> {
 
       // Capture the context for use after async operations if mounted
       final currentContext = context; // Assuming 'context' is the BuildContext of _showDriverSelectionDialog
-      if (!mounted) return;
-      final scaffoldMessenger = ScaffoldMessenger.of(this.context);
+      if (!mounted) {
+        return;
+      }
+      final scaffoldMessenger = ScaffoldMessenger.of(context);
       final dialogNavigator = Navigator.of(currentContext);
 
       try {
@@ -286,38 +302,52 @@ class _RoutesScreenState extends State<RoutesScreen> {
           // if (!Navigator.of(currentContext).mounted) return; // Check before using context
           // ignore: use_build_context_synchronously
           // Navigator.of(currentContext).pop(selectedDriver); // Close driver selection dialog, pass back selected driver
-          if (mounted) dialogNavigator.pop(selectedDriver);
+          if (mounted) {
+            dialogNavigator.pop(selectedDriver);
+          }
           
           // Potentially pop the details dialog as well, or let the caller handle it.
           // For now, just pop the selection dialog.
           // The caller of _showDriverSelectionDialog would then call fetchRoutes().
 
-          if (!mounted) return; // Check before using context for ScaffoldMessenger
+          if (!mounted) {
+            return; // Check before using context for ScaffoldMessenger
+          }
           // ignore: use_build_context_synchronously
           // ScaffoldMessenger.of(context).showSnackBar(
           //   const SnackBar(content: Text('Conductor asignado a la ruta.')),
           // );
-          if (mounted) scaffoldMessenger.showSnackBar(
-            const SnackBar(content: Text('Conductor asignado a la ruta.')),
-          );
+          if (mounted) {
+            scaffoldMessenger.showSnackBar(
+              const SnackBar(content: Text('Conductor asignado a la ruta.')),
+            );
+          }
           fetchRoutes(); // Refresh the routes list on the main screen
         } else {
-          if (!mounted) return; // Check before using context for ScaffoldMessenger
+          if (!mounted) {
+            return; // Check before using context for ScaffoldMessenger
+          }
           // ScaffoldMessenger.of(context).showSnackBar(
           //   SnackBar(content: Text('Error al asignar conductor: ${response.body} (Status: ${response.statusCode})')),
           // );
-          if (mounted) scaffoldMessenger.showSnackBar(
-            SnackBar(content: Text('Error al asignar conductor: ${response.body} (Status: ${response.statusCode})')),
-          );
+          if (mounted) {
+            scaffoldMessenger.showSnackBar(
+              SnackBar(content: Text('Error al asignar conductor: ${response.body} (Status: ${response.statusCode})')),
+            );
+          }
         }
       } catch (e) {
-        if (!mounted) return; // Check before using context for ScaffoldMessenger
+        if (!mounted) {
+          return; // Check before using context for ScaffoldMessenger
+        }
         // ScaffoldMessenger.of(context).showSnackBar(
         //   SnackBar(content: Text('Error de conexión al asignar conductor: $e')),
         // );
-        if (mounted) scaffoldMessenger.showSnackBar(
-          SnackBar(content: Text('Error de conexión al asignar conductor: $e')),
-        );
+        if (mounted) {
+          scaffoldMessenger.showSnackBar(
+            SnackBar(content: Text('Error de conexión al asignar conductor: $e')),
+          );
+        }
       }
     }
   }
@@ -336,7 +366,9 @@ class _RoutesScreenState extends State<RoutesScreen> {
   }
 
   List<dynamic> _getFilteredRoutes() {
-    if (filterStatus == 'Todas') return routes;
+    if (filterStatus == 'Todas') {
+      return routes;
+    }
     return routes.where((route) => route['status'] == filterStatus).toList();
   }
 

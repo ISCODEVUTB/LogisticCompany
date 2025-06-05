@@ -79,9 +79,9 @@ void main() {
     final mockClient = MockClient();
 
     debugPrint('Test: Setting up mocks...');
-    when(mockClient.get(Uri.parse('http://localhost:8000/api/dashboard')))
+    when(mockClient.get(Uri.parse('http://localhost:8000/api/dashboard_disabled')))
         .thenAnswer((_) async {
-          debugPrint('Test: Dashboard mock was called!');
+          debugPrint('Test: Dashboard mock for _disabled was called!'); // Optional: update debugPrint
           return http.Response(
               '{"pedidos": {"total": 5, "enTransito": 2}, "conductores": {"disponibles": 1, "asignados": 0}, "rutas": {"activas": 0}, "tracking": {"eventos": 0}}',
               200,

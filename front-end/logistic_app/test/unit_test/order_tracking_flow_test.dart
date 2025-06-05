@@ -34,7 +34,7 @@ void main() {
     };
 
     // Mock for Dashboard
-    when(mockClient.get(Uri.parse('http://localhost:8000/api/dashboard')))
+    when(mockClient.get(Uri.parse('http://localhost:8000/api/dashboard_disabled')))
         .thenAnswer((_) async => http.Response(
             '{"pedidos": {"total": 1, "enTransito": 1}, "conductores": {"disponibles": 1, "asignados": 1}, "rutas": {"activas": 1}, "tracking": {"eventos": 1}}',
             200,
