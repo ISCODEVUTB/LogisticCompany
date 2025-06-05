@@ -1,5 +1,6 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone # Added timezone
+import logging # Added
 
 from app.models.shipping_order import ShippingOrder
 from app.schemas.shipping_order_schema import (
@@ -10,7 +11,7 @@ from app.repository.shipping_order_repo import (
     save_order,
     get_order_by_id,
     get_order_by_tracking_code,
-    update_order_status,
+    update_order_status as repo_update_order_status, # Aliased
     cancel_order
 )
 from app.services.tracking_service_client import send_tracking_event
@@ -76,16 +77,44 @@ async def cancel_shipping_order(order_id: str) -> bool:
 
 
 async def update_shipping_order_status(order_id: str, new_status: str) -> bool:
-    order_data = update_order_status(order_id, new_status)
-    if order_data:
-        tracking_code = order_data["tracking_code"]
-        updated_at_iso = order_data["updated_at"]
-        # Handle 'Z' for UTC timezone info if present
-        updated_at_dt = datetime.fromisoformat(updated_at_iso.replace("Z", "+00:00"))
-        await send_tracking_event(tracking_code, new_status, updated_at_dt)
-        return True
-    return False
+    logging.info(f"Attempting to update order ID: {order_id} to status: {new_status}")
 
+    order_data = repo_update_order_status(order_id, new_status) # This is from shipping_order_repo.py
+
+    if order_data is not None: # Explicitly check for None
+        logging.info(f"Order ID: {order_id} found and updated in repo. Order data: {order_data}")
+        try:
+            tracking_code = order_data["tracking_code"]
+            # Ensure updated_at is present and correctly formatted
+            updated_at_iso = order_data.get("updated_at")
+            if not updated_at_iso:
+                logging.warning(f"updated_at not found for order {order_id} after update, using current time for tracking.")
+                updated_at_dt = datetime.now(timezone.utc) # Fallback, though repo should set it
+            else:
+                # Handle potential 'Z' if FastAPI/Pydantic doesn't strip it for fromisoformat
+                if isinstance(updated_at_iso, str) and updated_at_iso.endswith('Z'):
+                    updated_at_iso = updated_at_iso[:-1] + "+00:00"
+                elif isinstance(updated_at_iso, datetime): # If it's already a datetime obj
+                    updated_at_dt = updated_at_iso
+                    if updated_at_dt.tzinfo is None: # Ensure timezone aware
+                         updated_at_dt = updated_at_dt.replace(tzinfo=timezone.utc)
+                    updated_at_dt = updated_at_dt.astimezone(timezone.utc) # Normalize to UTC
+                else: # Assuming it's an ISO string from the repo's json.dump logic
+                    updated_at_dt = datetime.fromisoformat(updated_at_iso)
+
+
+            logging.info(f"Sending tracking event for order ID: {order_id}, tracking_code: {tracking_code}, status: {new_status}")
+            await send_tracking_event(tracking_code, new_status, updated_at_dt)
+            logging.info(f"Tracking event sent for order ID: {order_id}")
+            return True
+        except Exception as e:
+            logging.error(f"Error sending tracking event for order ID: {order_id} after status update: {e}", exc_info=True)
+            # Decide if this should still return True as the order status was updated.
+            # For now, let's say the primary operation (status update) succeeded.
+            return True
+    else:
+        logging.info(f"Order ID: {order_id} not found in repo or not updated.")
+        return False
 
 def track_shipping_order(tracking_code: str) -> ShippingOrderResponseDTO | None:
     order = get_order_by_tracking_code(tracking_code)

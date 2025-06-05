@@ -168,22 +168,25 @@ class _RoutesScreenState extends State<RoutesScreen> {
 
                             if (!mounted) return;
 
-                            Navigator.of(detailsDialogContext).pop(); // Close details dialog
+
+                            // Pop dialog first
+                            Navigator.of(detailsDialogContext).pop();
 
                             if (response.statusCode == 200) {
                               fetchRoutes(); // Refresh list
-                              ScaffoldMessenger.of(detailsDialogContext).showSnackBar( // Use captured context
+                              if (!mounted) return; // Check mounted again before using this.context
+                              ScaffoldMessenger.of(this.context).showSnackBar(
                                 const SnackBar(content: Text('Ruta marcada como completada')),
                               );
                             } else {
-                              ScaffoldMessenger.of(detailsDialogContext).showSnackBar( // Use captured context
+                              if (!mounted) return;
+                              ScaffoldMessenger.of(this.context).showSnackBar(
+
                                 SnackBar(content: Text('Error al completar ruta: ${response.body}')),
                               );
                             }
                           } catch (e) {
-                            if (!mounted) return;
-                             // Potentially pop dialog if it's still open and an error occurs before response
-                            ScaffoldMessenger.of(detailsDialogContext).showSnackBar( // Use captured context
+
                               SnackBar(content: Text('Error de conexión al completar ruta: $e')),
                             );
                           }
@@ -273,20 +276,24 @@ class _RoutesScreenState extends State<RoutesScreen> {
           // For now, just pop the selection dialog.
           // The caller of _showDriverSelectionDialog would then call fetchRoutes().
 
-          ScaffoldMessenger.of(this.context).showSnackBar( // Assuming 'this.context' is the main screen's context
+          if (!mounted) return; // Check before using context for ScaffoldMessenger
+          ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Conductor asignado a la ruta.')),
           );
-          fetchRoutes(); // Refresh the routes list on the main scr
-          
+          fetchRoutes(); // Refresh the routes list on the main screen
         } else {
-          if (!Navigator.of(currentContext).mounted) return;
-           ScaffoldMessenger.of(this.context).showSnackBar( // Use main screen's context
+          if (!mounted) return; // Check before using context for ScaffoldMessenger
+           ScaffoldMessenger.of(context).showSnackBar(
+
+
+          
             SnackBar(content: Text('Error al asignar conductor: ${response.body} (Status: ${response.statusCode})')),
           );
         }
       } catch (e) {
-        if (!Navigator.of(currentContext).mounted) return;
-         ScaffoldMessenger.of(this.context).showSnackBar( // Use main screen's context
+        if (!mounted) return; // Check before using context for ScaffoldMessenger
+         ScaffoldMessenger.of(context).showSnackBar(
+
           SnackBar(content: Text('Error de conexión al asignar conductor: $e')),
         );
       }
@@ -415,22 +422,24 @@ class _RoutesScreenState extends State<RoutesScreen> {
                           );
 
                     if (!mounted) return;
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(); // Pop dialog using its own context
 
                     if (response.statusCode == 201 || response.statusCode == 200) { // FastAPI usually returns 201 for POST
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      if (!mounted) return; // Check before using this.context for SnackBar
+                      ScaffoldMessenger.of(this.context).showSnackBar(
                         const SnackBar(content: Text('Ruta creada correctamente')),
                       );
                       fetchRoutes(); // Refresh the list
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      if (!mounted) return;
+                      ScaffoldMessenger.of(this.context).showSnackBar(
                         SnackBar(content: Text('Error al crear ruta: ${response.body}')),
                       );
                     }
                   } catch (e) {
                     if (!mounted) return;
-                    Navigator.of(context).pop();
                     ScaffoldMessenger.of(context).showSnackBar(
+
                       SnackBar(content: Text('Error de conexión: $e')),
                     );
                   }
