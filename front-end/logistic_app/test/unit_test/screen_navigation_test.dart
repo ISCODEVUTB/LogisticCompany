@@ -2,7 +2,6 @@ import 'dart:async'; // For StreamTransformer, StreamSubscription
 import 'dart:io'; // For HttpOverrides, HttpClient, HttpClientRequest, HttpClientResponse, HttpHeaders, HttpStatus, HttpConnectionInfo, Cookie
 import 'dart:typed_data'; // For Uint8List
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:logistic_company_web/main.dart'; // Assuming InfoCard is here or imported
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
@@ -10,11 +9,6 @@ import 'package:mockito/mockito.dart';
 // Import the generated mocks
 import 'backend_integration_test.mocks.dart';
 import 'mock_utils.dart'; // Restored setupCommonMocks
-
-// A transparent 1x1 pixel PNG image
-import 'dart:async'; // For StreamTransformer, StreamSubscription
-import 'dart:io'; // For HttpOverrides, HttpClient, HttpClientRequest, HttpClientResponse, HttpHeaders, HttpStatus, HttpConnectionInfo, Cookie
-import 'dart:typed_data'; // For Uint8List
 
 // Minimal MockHttpHeaders and related classes for image mocking might still be needed if HttpOverrides is removed
 // and images are fetched. For now, focusing on API mocks.
