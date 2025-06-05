@@ -62,12 +62,29 @@ def get_shipping_order_by_id(order_id: str) -> ShippingOrderResponseDTO | None:
     )
 
 
-def cancel_shipping_order(order_id: str) -> bool:
-    return cancel_order(order_id)
+async def cancel_shipping_order(order_id: str) -> bool:
+    order_data = cancel_order(order_id)
+    if order_data:
+        tracking_code = order_data["tracking_code"]
+        cancelled_status = order_data["status"] # Should be "cancelled"
+        updated_at_iso = order_data["updated_at"]
+        # Handle 'Z' for UTC timezone info if present
+        updated_at_dt = datetime.fromisoformat(updated_at_iso.replace("Z", "+00:00"))
+        await send_tracking_event(tracking_code, cancelled_status, updated_at_dt)
+        return True
+    return False
 
 
-def update_shipping_order_status(order_id: str, status: str) -> bool:
-    return update_order_status(order_id, status)
+async def update_shipping_order_status(order_id: str, new_status: str) -> bool:
+    order_data = update_order_status(order_id, new_status)
+    if order_data:
+        tracking_code = order_data["tracking_code"]
+        updated_at_iso = order_data["updated_at"]
+        # Handle 'Z' for UTC timezone info if present
+        updated_at_dt = datetime.fromisoformat(updated_at_iso.replace("Z", "+00:00"))
+        await send_tracking_event(tracking_code, new_status, updated_at_dt)
+        return True
+    return False
 
 
 def track_shipping_order(tracking_code: str) -> ShippingOrderResponseDTO | None:
