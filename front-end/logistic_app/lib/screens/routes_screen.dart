@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class RoutesScreen extends StatefulWidget {
   final http.Client? client;
-  const RoutesScreen({super.key, this.client} );
+  const RoutesScreen({super.key, this.client});
   
   @override
   State<RoutesScreen> createState() => _RoutesScreenState();
@@ -29,8 +29,8 @@ class _RoutesScreenState extends State<RoutesScreen> {
 
     try {
       final response = widget.client != null
-          ? await widget.client!.get(Uri.parse('http://localhost:8004/routes' ))
-          : await http.get(Uri.parse('http://localhost:8004/routes' ));
+          ? await widget.client!.get(Uri.parse('http://localhost:8004/routes'))
+          : await http.get(Uri.parse('http://localhost:8004/routes'));
 
       if (response.statusCode == 200) {
         List<dynamic> decodedData = json.decode(response.body);
@@ -161,10 +161,10 @@ class _RoutesScreenState extends State<RoutesScreen> {
                           final BuildContext detailsDialogContext = context; // Capture context
 
                           try {
-                            final uri = Uri.parse('http://localhost:8004/routes/$routeId/complete' );
+                            final uri = Uri.parse('http://localhost:8004/routes/$routeId/complete');
                             final response = widget.client != null
                                 ? await widget.client!.patch(uri)
-                                : await http.patch(uri );
+                                : await http.patch(uri);
 
                             if (!mounted) return;
 
@@ -174,12 +174,12 @@ class _RoutesScreenState extends State<RoutesScreen> {
                             if (response.statusCode == 200) {
                               fetchRoutes(); // Refresh list
                               if (!mounted) return; // Check mounted again before using this.context
-                              ScaffoldMessenger.of(context).showSnackBar(
+                              ScaffoldMessenger.of(this.context).showSnackBar(
                                 const SnackBar(content: Text('Ruta marcada como completada')),
                               );
                             } else {
                               if (!mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
+                              ScaffoldMessenger.of(this.context).showSnackBar(
                                 SnackBar(content: Text('Error al completar ruta: ${response.body}')),
                               );
                             }
@@ -207,8 +207,8 @@ class _RoutesScreenState extends State<RoutesScreen> {
     List<dynamic> availableDrivers = [];
     try {
       final response = widget.client != null
-          ? await widget.client!.get(Uri.parse('http://localhost:8001/drivers?status=Disponible' ))
-          : await http.get(Uri.parse('http://localhost:8001/drivers?status=Disponible' ));
+          ? await widget.client!.get(Uri.parse('http://localhost:8001/drivers?status=Disponible'))
+          : await http.get(Uri.parse('http://localhost:8001/drivers?status=Disponible'));
       if (response.statusCode == 200) {
         availableDrivers = json.decode(response.body);
       } else { /* Handle error */ }
@@ -251,13 +251,13 @@ class _RoutesScreenState extends State<RoutesScreen> {
       final currentContext = context; // Assuming 'context' is the BuildContext of _showDriverSelectionDialog
 
       try {
-        final uri = Uri.parse('http://localhost:8004/routes/$routeId/driver' );
+        final uri = Uri.parse('http://localhost:8004/routes/$routeId/driver');
         final headers = {'Content-Type': 'application/json; charset=utf-8'};
         final body = json.encode({'driver_id': driverId});
 
         final response = widget.client != null
             ? await widget.client!.patch(uri, headers: headers, body: body)
-            : await http.patch(uri, headers: headers, body: body );
+            : await http.patch(uri, headers: headers, body: body);
 
         // Check mounted before using context after await
         // This check should ideally use a State's mounted property,
@@ -268,12 +268,14 @@ class _RoutesScreenState extends State<RoutesScreen> {
         // or rely on the try-catch to handle cases where context might be invalid.
 
         if (response.statusCode == 200) { // Backend now returns 200 with updated route
-          if (!mounted) return; // Check before using context
-          
+          if (!Navigator.of(currentContext).mounted) return; // Check before using context
+          Navigator.of(currentContext).pop(selectedDriver); // Close driver selection dialog, pass back selected driver
+
           // Potentially pop the details dialog as well, or let the caller handle it.
           // For now, just pop the selection dialog.
           // The caller of _showDriverSelectionDialog would then call fetchRoutes().
 
+          if (!mounted) return; // Check before using context for ScaffoldMessenger
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Conductor asignado a la ruta.')),
           );
@@ -347,28 +349,218 @@ class _RoutesScreenState extends State<RoutesScreen> {
                     validator: (value) => value == null || value.isEmpty ? 'Ingrese el tiempo estimado' : null,
                     onSaved: (value) => estimatedTimeStr = value!,
                   ),
-                  // Aquí continuaría el resto del formulario
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: 'Distancia (km)'),
+                    keyboardType: TextInputType.number,
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese la distancia' : null,
+                    onSaved: (value) => distanceKmStr = value!,
+                  ),
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: 'ID del Conductor (opcional)'),
+                    onSaved: (value) => driverId = value ?? '',
+                  ),
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: 'IDs de Pedidos (separados por coma, opcional)'),
+                    onSaved: (value) => orderIdsStr = value ?? '',
+                  ),
                 ],
               ),
             ),
           ),
-          actions: [
+          actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context),
               child: const Text('Cancelar'),
+              onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              onPressed: () {
-                // Lógica para guardar la nueva ruta
+              child: const Text('Crear'),
+              onPressed: () async {
+                if (formKey.currentState!.validate()) {
+                  formKey.currentState!.save();
+                  
+                  // Process the form data
+                  final int estimatedTimeMinutes = int.tryParse(estimatedTimeStr) ?? 0;
+                  final int distanceKm = int.tryParse(distanceKmStr) ?? 0;
+                  
+                  // Format estimated time as "Xh Ymin"
+                  final String formattedTime = estimatedTimeMinutes >= 60
+                      ? '${estimatedTimeMinutes ~/ 60}h ${estimatedTimeMinutes % 60}min'
+                      : '${estimatedTimeMinutes}min';
+                  
+                  // Process order IDs if provided
+                  final List<String> orderIds = orderIdsStr.isNotEmpty
+                      ? orderIdsStr.split(',').map((e) => e.trim()).toList()
+                      : [];
+                  
+                  // Create route data
+                  final Map<String, dynamic> routeData = {
+                    'startLocation': origin,
+                    'endLocation': destination,
+                    'estimatedTime': formattedTime,
+                    'distance': distanceKm,
+                    'status': 'Programada',
+                  };
+                  
+                  // Add driver ID if provided
+                  if (driverId.isNotEmpty) {
+                    routeData['driver_id'] = driverId;
+                  }
+                  
+                  // Add order IDs if provided
+                  if (orderIds.isNotEmpty) {
+                    routeData['order_ids'] = orderIds;
+                  }
+                  
+                  try {
+                    final response = await http.post(
+                      Uri.parse('http://localhost:8004/routes'),
+                      headers: {'Content-Type': 'application/json'},
+                      body: json.encode(routeData),
+                    );
+                    
+                    if (!mounted) return;
+                    Navigator.of(context).pop(); // Close dialog
+                    
+                    if (response.statusCode == 201) {
+                      fetchRoutes(); // Refresh routes list
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Ruta creada exitosamente')),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error al crear ruta: ${response.body}')),
+                      );
+                    }
+                  } catch (e) {
+                    if (!mounted) return;
+                    Navigator.of(context).pop(); // Close dialog
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error de conexión: $e')),
+                    );
+                  }
+                }
               },
-              child: const Text('Guardar'),
             ),
           ],
         );
       },
     );
   }
-  
-  // Aquí continuaría el resto de la clase _RoutesScreenState
-}
 
+  @override
+  Widget build(BuildContext context) {
+    final filteredRoutes = _getFilteredRoutes();
+    
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Gestión de Rutas'),
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.filter_list),
+            onSelected: (String value) {
+              setState(() {
+                filterStatus = value;
+              });
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'Todas',
+                child: Text('Todas las rutas'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Activa',
+                child: Text('Rutas activas'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Programada',
+                child: Text('Rutas programadas'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Completada',
+                child: Text('Rutas completadas'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Cancelada',
+                child: Text('Rutas canceladas'),
+              ),
+            ],
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          if (errorMessage.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              color: Colors.amber.shade100,
+              width: double.infinity,
+              child: Text(
+                errorMessage,
+                style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
+              ),
+            ),
+          Expanded(
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : filteredRoutes.isEmpty
+                    ? const Center(child: Text('No hay rutas disponibles'))
+                    : ListView.builder(
+                        itemCount: filteredRoutes.length,
+                        itemBuilder: (context, index) {
+                          final route = filteredRoutes[index];
+                          return Card(
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            elevation: 2,
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.all(16),
+                              title: Text(
+                                route['name'] ?? 'Ruta sin nombre',
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 8),
+                                  Text('${route['startLocation']} → ${route['endLocation']}'),
+                                  const SizedBox(height: 4),
+                                  Text('Conductor: ${route['driver'] ?? 'No asignado'}'),
+                                  const SizedBox(height: 8),
+                                  LinearProgressIndicator(
+                                    value: (route['progress'] as num? ?? 0) / 100.0,
+                                    backgroundColor: Colors.grey[300],
+                                    valueColor: AlwaysStoppedAnimation<Color>(_getStatusColor(route['status'] ?? 'Desconocido')),
+                                    minHeight: 6,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text('Progreso: ${route['progress'] ?? 0}%'),
+                                ],
+                              ),
+                              trailing: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: _getStatusColor(route['status'] ?? 'Desconocido').withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  route['status'] ?? 'Desconocido',
+                                  style: TextStyle(
+                                    color: _getStatusColor(route['status'] ?? 'Desconocido'),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              onTap: () => _showRouteDetails(route),
+                            ),
+                          );
+                        },
+                      ),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showCreateRouteDialog,
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
