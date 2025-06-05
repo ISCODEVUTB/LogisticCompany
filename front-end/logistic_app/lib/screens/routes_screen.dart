@@ -269,6 +269,7 @@ class _RoutesScreenState extends State<RoutesScreen> {
 
         if (response.statusCode == 200) { // Backend now returns 200 with updated route
           if (!Navigator.of(currentContext).mounted) return; // Check before using context
+          // ignore: use_build_context_synchronously
           Navigator.of(currentContext).pop(selectedDriver); // Close driver selection dialog, pass back selected driver
 
           // Potentially pop the details dialog as well, or let the caller handle it.
@@ -276,6 +277,7 @@ class _RoutesScreenState extends State<RoutesScreen> {
           // The caller of _showDriverSelectionDialog would then call fetchRoutes().
 
           if (!mounted) return; // Check before using context for ScaffoldMessenger
+          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Conductor asignado a la ruta.')),
           );
