@@ -44,6 +44,10 @@ async def create_route_endpoint(data: RouteCreate):
 def list_routes():
     return service.get_all()
 
+@router.get("/routes", response_model=List[RouteOut])
+def list_routes_alias():
+    return service.get_all()
+
 
 @router.delete("/routes/{route_id}")
 def delete_route(route_id: str):

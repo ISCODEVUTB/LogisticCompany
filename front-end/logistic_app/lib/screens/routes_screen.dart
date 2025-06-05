@@ -28,9 +28,7 @@ class _RoutesScreenState extends State<RoutesScreen> {
 
     try {
       // Intenta obtener datos del backend
-      final response = await http.get(
-        Uri.parse('http://localhost:8000/api/routes' ),
-      ).timeout(const Duration(seconds: 5));
+      final response = await http.get(Uri.parse('http://localhost:8002/api/routes/'));
 
       if (response.statusCode == 200) {
         setState(() {

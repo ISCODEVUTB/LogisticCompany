@@ -1,0 +1,34 @@
+version: '3.9'
+services:
+  driver_service:
+    build:
+      context: ./driver_service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+
+  shipping_order_service:
+    build: 
+      context: ./shipping_order_service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+
+  routing_service:
+    build: 
+      context: ./routing_service
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+
+  tracking_service:
+    build: 
+      context: ./tracking_service
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8003"
+
+  frontend:
+    build: ./front-end/logistic_app
+    ports:
+      - "8080:80"

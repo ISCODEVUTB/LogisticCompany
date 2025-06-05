@@ -66,3 +66,8 @@ def cancel_order(order_id: str) -> bool:
         save_orders(orders)
         return True
     return False
+
+
+def get_all_orders():
+    orders = load_orders()
+    return [ShippingOrder(**data) for data in orders.values()]

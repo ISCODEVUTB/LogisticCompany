@@ -29,7 +29,7 @@ class _DriversScreenState extends State<DriversScreen> {
     try {
       // Intenta obtener datos del backend
       final response = await http.get(
-        Uri.parse('http://localhost:8000/api/drivers' ),
+        Uri.parse('http://localhost:8001/api/drivers/'),
       ).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {

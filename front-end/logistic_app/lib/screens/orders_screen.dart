@@ -27,9 +27,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
     try {
       // Intenta obtener datos del backend
-      final response = await http.get(
-        Uri.parse('http://localhost:8000/api/orders' ),
-      ).timeout(const Duration(seconds: 5));
+      final response = await http.get(Uri.parse('http://localhost:8000/api/orders/'));
 
       if (response.statusCode == 200) {
         setState(() {
