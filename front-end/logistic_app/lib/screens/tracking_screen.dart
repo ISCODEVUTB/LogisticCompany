@@ -39,8 +39,11 @@ class _TrackingScreenState extends State<TrackingScreen> {
 
     try {
       // Intenta obtener datos del backend
+      final response = widget.client != null
+          ? await widget.client!.get(Uri.parse('http://localhost:8000/api/tracking/$orderId'))
+          : await http.get(Uri.parse('http://localhost:8000/api/tracking/$orderId'));
+      // Note: Timeout handling for injected client is simplified.
 
-      final response = await http.get(Uri.parse('http://localhost:8000/api/tracking/$orderId'));
       if (response.statusCode == 200) {
         setState(() {
           trackingData = json.decode(response.body);
