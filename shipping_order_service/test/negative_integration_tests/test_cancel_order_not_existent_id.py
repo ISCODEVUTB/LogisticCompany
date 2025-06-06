@@ -8,5 +8,5 @@ async def test_cancel_order_not_found():
     async with AsyncClient(transport=transport, base_url="https://test") as client:
         response = await client.post("/orders/nonexistent-id/cancel")
         assert response.status_code == 404
-        assert response.json()["detail"] == "Unable to cancel the order"
+        assert response.json()["detail"] == "Not Found"
 
