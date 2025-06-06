@@ -1,5 +1,5 @@
-from routing_service.app.repository.routing_repo import create_route, get_all_routes, delete_route, mark_route_completed, get_active_routes
-from routing_service.app.schemas.routing_schema import RouteCreate
+from app.repository.routing_repo import create_route, get_all_routes, delete_route, mark_route_completed, get_active_routes
+from app.schemas.routing_schema import RouteCreate
 from pydantic import BaseModel
 
 class RouteService:
