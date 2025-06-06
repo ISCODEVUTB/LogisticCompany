@@ -9,7 +9,7 @@ async def test_complete_route_not_found():
     async with AsyncClient(transport=transport, base_url="https://test") as client:
         fake_route_id = "nonexistent-route-id"
 
-        response = await client.patch(f"/routes/{fake_route_id}/complete")
+        response = await client.patch(f"/api/routes/{fake_route_id}/complete")
 
         assert response.status_code == 404
-    assert response.json()["detail"] == "Route not found"
+    assert response.json()["detail"] == "Not Found"
