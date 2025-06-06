@@ -412,51 +412,5 @@
         "delivery_date": null,
         "created_at": "2025-05-22T03:02:34.488811+00:00",
         "updated_at": "2025-05-22T03:02:34.488821+00:00"
-    },
-    "8308112e-8ccb-48d9-aced-51cb9b7a7348": {
-        "order_id": "8308112e-8ccb-48d9-aced-51cb9b7a7348",
-        "tracking_code": "TRK-9FB4D7CA16",
-        "sender": {
-            "name": "Juan Pérez",
-            "address": "Calle 123",
-            "phone": "3123456789"
-        },
-        "receiver": {
-            "name": "María Gómez",
-            "address": "Avenida 456",
-            "phone": "9876543210"
-        },
-        "pickup_date": "2025-06-05T23:31:59.313851",
-        "package": {
-            "weight": 2.5,
-            "dimensions": "30x10x20"
-        },
-        "status": "created",
-        "delivery_date": null,
-        "created_at": "2025-06-05T23:31:59.314032+00:00",
-        "updated_at": "2025-06-05T23:31:59.314045+00:00"
-    },
-    "7b92f5fa-c7f4-4371-8275-79640e08158f": {
-        "order_id": "7b92f5fa-c7f4-4371-8275-79640e08158f",
-        "tracking_code": "TRK-37B6E6AA2E",
-        "sender": {
-            "name": "Juan Pérez",
-            "address": "Calle 123",
-            "phone": "3123456789"
-        },
-        "receiver": {
-            "name": "María Gómez",
-            "address": "Avenida 456",
-            "phone": "9876543210"
-        },
-        "pickup_date": "2025-06-05T23:33:11.607964",
-        "package": {
-            "weight": 2.5,
-            "dimensions": "30x10x20"
-        },
-        "status": "created",
-        "delivery_date": null,
-        "created_at": "2025-06-05T23:33:11.608125+00:00",
-        "updated_at": "2025-06-05T23:33:11.608135+00:00"
     }
 }
