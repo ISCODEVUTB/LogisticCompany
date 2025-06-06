@@ -14,7 +14,7 @@ async def test_update_driver_success():
             "phone": "3055556677"
             # "email" field removed
         }
-        response_create = await client.post("/drivers/", json=payload)
+        response_create = await client.post("/api/drivers/", json=payload)
         assert response_create.status_code == 201 # Ensure successful creation
         driver_id = response_create.json()["driver_id"] # Assuming 'id' is the key
 
@@ -23,6 +23,6 @@ async def test_update_driver_success():
             "phone": "3200001111"
             # "email" field removed from update payload as well
         }
-        response_update = await client.patch(f"/drivers/{driver_id}", json=update_payload)
+        response_update = await client.patch(f"/api/drivers/{driver_id}", json=update_payload)
         assert response_update.status_code == 200
         assert response_update.json()["message"] == "Driver updated successfully"
