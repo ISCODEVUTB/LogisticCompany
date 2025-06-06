@@ -1,17 +1,13 @@
+import httpx
 from datetime import datetime, timezone
 
-import httpx
-
 TRACKING_URL = "http://localhost:8003/tracking/track"  # Puerto de tracking_service
-
 
 async def send_tracking_event(tracking_code: str, status: str):
     payload = {
         "tracking_code": tracking_code,
         "status": status,
-        "timestamp": datetime.fromtimestamp(
-            datetime.now().timestamp(), timezone.utc
-        ).isoformat(),
+        "timestamp": datetime.fromtimestamp(timestamp, timezone.utc).isoformat()
     }
     try:
         async with httpx.AsyncClient() as client:
