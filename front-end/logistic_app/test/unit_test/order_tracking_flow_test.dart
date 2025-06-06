@@ -92,9 +92,11 @@ void main() {
       await tester.pump(); // Process pending frames
       await tester.pumpAndSettle(); // Settle again to ensure dialog is fully rendered
 
-      // Tap the "Rastrear" button in the dialog
-      expect(find.widgetWithText(ElevatedButton, 'Rastrear'), findsOneWidget);
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Rastrear'));
+      final rastrearButton = find.ancestor(
+        of: find.text('Rastrear'), matching: find.byType(ElevatedButton),
+      );
+      expect(rastrearButton, findsOneWidget);
+      await tester.tap(rastrearButton);
       await tester.pumpAndSettle(); // Navigates to TrackingScreen, TrackingScreen.initState calls fetchTrackingData
 
       // Verify we are on the TrackingScreen and data is displayed
