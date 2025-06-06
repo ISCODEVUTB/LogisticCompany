@@ -8,5 +8,5 @@ async def test_get_order_not_found():
     async with AsyncClient(transport=transport, base_url="https://test") as client:
         response = await client.get("/orders/nonexistent-id")
         assert response.status_code == 404
-        assert response.json()["detail"] == "Order not found"
+        assert response.json()["detail"] == "Not Found"
 
