@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 import uuid
 
-DB_FILE = Path(__file__).parent / "routes.json"
+DB_FILE = Path("app/repository/routes.json")
 
 if not DB_FILE.parent.exists():
     DB_FILE.parent.mkdir(parents=True, exist_ok=True)
