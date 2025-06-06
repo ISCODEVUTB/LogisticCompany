@@ -1,9 +1,7 @@
 import pytest
 from httpx import AsyncClient
 from httpx._transports.asgi import ASGITransport
-
 from driver_service.app.main import app
-
 
 @pytest.mark.asyncio
 async def test_assign_route_to_nonexistent_driver():
@@ -12,9 +10,6 @@ async def test_assign_route_to_nonexistent_driver():
         driver_id = "nonexistent-driver-abc"
         route_id = "route-001"
 
-        response = await client.patch(
-            f"/api/drivers/{driver_id}/assign-route",
-            params={"route_id": route_id},
-        )
+        response = await client.patch(f"/drivers/{driver_id}/assign-route", params={"route_id": route_id})
         assert response.status_code == 404
         assert response.json()["detail"] == "Driver not found"
