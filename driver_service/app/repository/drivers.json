@@ -226,5 +226,119 @@
         "status": "available",
         "created_at": "2025-06-05T23:00:10.395662+00:00",
         "updated_at": "2025-06-05T23:00:10.398149+00:00"
+    },
+    "64ecb3bf-6835-4ffb-b807-670a5f310754": {
+        "driver_id": "64ecb3bf-6835-4ffb-b807-670a5f310754",
+        "name": "Laura Rodríguez",
+        "license_id": "ROUTE001",
+        "phone": "3101234567",
+        "status": "available",
+        "created_at": "2025-06-06T17:15:58.547935+00:00",
+        "updated_at": "2025-06-06T17:15:58.552945+00:00",
+        "assigned_routes": [
+            "R123"
+        ]
+    },
+    "fc68a5de-e02d-4bc3-a8b4-d336cd312ad7": {
+        "driver_id": "fc68a5de-e02d-4bc3-a8b4-d336cd312ad7",
+        "name": "Carlos Méndez",
+        "license_id": "CAR567890",
+        "phone": "3129988776",
+        "status": "inactive",
+        "created_at": "2025-06-06T17:17:17.848797+00:00",
+        "updated_at": "2025-06-06T17:17:17.852807+00:00"
+    },
+    "f76add56-8ac9-438d-9732-0ffc98cfdc90": {
+        "driver_id": "f76add56-8ac9-438d-9732-0ffc98cfdc90",
+        "name": "Test Driver Minimal",
+        "license_id": "TDMIN123",
+        "phone": "1234567890",
+        "status": "available",
+        "created_at": "2025-06-06T17:18:44.709109+00:00",
+        "updated_at": "2025-06-06T17:18:44.709121+00:00"
+    },
+    "d1182a52-f5c1-4047-a84d-61abd9c563bb": {
+        "driver_id": "d1182a52-f5c1-4047-a84d-61abd9c563bb",
+        "name": "Carlos Mendoza",
+        "license_id": "CAR123456",
+        "phone": "3011112233",
+        "status": "available",
+        "created_at": "2025-06-06T17:20:12.412073+00:00",
+        "updated_at": "2025-06-06T17:20:12.412099+00:00"
+    },
+    "97c374ba-d418-42e8-9472-baa35a3ca029": {
+        "driver_id": "97c374ba-d418-42e8-9472-baa35a3ca029",
+        "name": "Laura Gómez",
+        "license_id": "XYZ987654",
+        "phone": "3007654321",
+        "status": "available",
+        "created_at": "2025-06-06T17:21:35.697861+00:00",
+        "updated_at": "2025-06-06T17:21:35.697875+00:00"
+    },
+    "8b67e9fb-fdae-4da6-9822-60ddb279f8ec": {
+        "driver_id": "8b67e9fb-fdae-4da6-9822-60ddb279f8ec",
+        "name": "Laura Gómez",
+        "license_id": "LAU456789",
+        "phone": "3200001111",
+        "status": "available",
+        "created_at": "2025-06-06T17:23:05.969061+00:00",
+        "updated_at": "2025-06-06T17:23:05.973396+00:00"
+    },
+    "98270541-c5a6-4936-8bff-327f4e315c59": {
+        "driver_id": "98270541-c5a6-4936-8bff-327f4e315c59",
+        "name": "Laura Rodríguez",
+        "license_id": "ROUTE001",
+        "phone": "3101234567",
+        "status": "available",
+        "created_at": "2025-06-06T17:23:45.610040+00:00",
+        "updated_at": "2025-06-06T17:23:45.613787+00:00",
+        "assigned_routes": [
+            "R123"
+        ]
+    },
+    "0214e98d-b5bc-4de5-aade-98f9e864a43f": {
+        "driver_id": "0214e98d-b5bc-4de5-aade-98f9e864a43f",
+        "name": "Carlos Méndez",
+        "license_id": "CAR567890",
+        "phone": "3129988776",
+        "status": "inactive",
+        "created_at": "2025-06-06T17:23:45.621393+00:00",
+        "updated_at": "2025-06-06T17:23:45.624786+00:00"
+    },
+    "595e7ca5-19f8-4dac-8811-dc2202153686": {
+        "driver_id": "595e7ca5-19f8-4dac-8811-dc2202153686",
+        "name": "Test Driver Minimal",
+        "license_id": "TDMIN123",
+        "phone": "1234567890",
+        "status": "available",
+        "created_at": "2025-06-06T17:23:45.632628+00:00",
+        "updated_at": "2025-06-06T17:23:45.632634+00:00"
+    },
+    "b2d86588-b9c1-41d3-82d5-bbc23ff83340": {
+        "driver_id": "b2d86588-b9c1-41d3-82d5-bbc23ff83340",
+        "name": "Carlos Mendoza",
+        "license_id": "CAR123456",
+        "phone": "3011112233",
+        "status": "available",
+        "created_at": "2025-06-06T17:23:45.641913+00:00",
+        "updated_at": "2025-06-06T17:23:45.641919+00:00"
+    },
+    "b735a330-6ba0-4734-8166-0e4c00b9ae04": {
+        "driver_id": "b735a330-6ba0-4734-8166-0e4c00b9ae04",
+        "name": "Laura Gómez",
+        "license_id": "XYZ987654",
+        "phone": "3007654321",
+        "status": "available",
+        "created_at": "2025-06-06T17:23:45.658745+00:00",
+        "updated_at": "2025-06-06T17:23:45.658751+00:00"
+    },
+    "31782b9d-f7cc-4491-8035-b81b06974442": {
+        "driver_id": "31782b9d-f7cc-4491-8035-b81b06974442",
+        "name": "Laura Gómez",
+        "license_id": "LAU456789",
+        "phone": "3200001111",
+        "status": "available",
+        "created_at": "2025-06-06T17:23:45.668355+00:00",
+        "updated_at": "2025-06-06T17:23:45.671871+00:00"
     }
 }

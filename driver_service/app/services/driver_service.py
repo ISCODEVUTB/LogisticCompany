@@ -1,12 +1,12 @@
 import uuid
 from datetime import datetime, timezone
-from app.models.driver import Driver
-from app.schemas.driver_schema import (
+from driver_service.app.models.driver import Driver
+from driver_service.app.schemas.driver_schema import (
     DriverCreateDTO,
     DriverUpdateDTO,
     DriverResponseDTO
 )
-from app.repository.driver_repo import (
+from driver_service.app.repository.driver_repo import (
     save_driver,
     get_driver_by_id,
     get_all_drivers,

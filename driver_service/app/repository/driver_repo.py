@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Optional, Dict
 from datetime import datetime, timezone
-from app.models.driver import Driver
+from driver_service.app.models.driver import Driver
 
 # Ruta del archivo JSON
 DB_FILE = Path(__file__).parent / "drivers.json"

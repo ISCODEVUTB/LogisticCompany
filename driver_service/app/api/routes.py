@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException
-from app.schemas.driver_schema import (
+from driver_service.app.schemas.driver_schema import (
     DriverCreateDTO,
     DriverUpdateDTO,
     DriverResponseDTO
 )
-from app.services.driver_service import (
+from driver_service.app.services.driver_service import (
     create_driver,
     get_driver,
     list_drivers,
