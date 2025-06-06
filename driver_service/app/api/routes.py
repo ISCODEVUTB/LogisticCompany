@@ -1,14 +1,21 @@
 from fastapi import APIRouter, HTTPException
-
-from ..schemas.driver_schema import (DriverCreateDTO, DriverResponseDTO,
-                                     DriverUpdateDTO)
-from ..services.driver_service import (assign_route, create_driver,
-                                       deactivate_driver, get_driver,
-                                       list_drivers, update_driver_data)
+from app.schemas.driver_schema import (
+    DriverCreateDTO,
+    DriverUpdateDTO,
+    DriverResponseDTO
+)
+from app.services.driver_service import (
+    create_driver,
+    get_driver,
+    list_drivers,
+    update_driver_data,
+    deactivate_driver,
+    assign_route
+)
 
 router = APIRouter()
 
-DRIVER_NOT_FOUND = "Driver not found"
+DRIVER_NOT_FOUND = "Driver not found"  
 
 
 @router.post("/", response_model=DriverResponseDTO, status_code=201)
@@ -26,11 +33,6 @@ def get_driver_by_id(driver_id: str):
 
 @router.get("/", response_model=list[DriverResponseDTO])
 def get_all_drivers():
-    return list_drivers()
-
-
-@router.get("", response_model=list[DriverResponseDTO])
-def get_all_drivers_alias():
     return list_drivers()
 
 
@@ -56,3 +58,4 @@ def assign_route_to_driver(driver_id: str, route_id: str):
     if not success:
         raise HTTPException(status_code=404, detail=DRIVER_NOT_FOUND)
     return {"message": f"Route {route_id} assigned to driver {driver_id}"}
+
