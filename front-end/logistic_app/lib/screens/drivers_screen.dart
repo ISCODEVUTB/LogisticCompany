@@ -29,9 +29,11 @@ class _DriversScreenState extends State<DriversScreen> {
 
     try {
       // Intenta obtener datos del backend
-      final response = await http.get(
-        Uri.parse('http://localhost:8001/api/drivers/'),
-      ).timeout(const Duration(seconds: 5));
+      final response = widget.client != null
+          ? await widget.client!.get(Uri.parse('http://localhost:8000/api/drivers'))
+          : await http.get(Uri.parse('http://localhost:8000/api/drivers'));
+      // Note: Timeout handling for injected client is simplified here, similar to OrdersScreen.
+
       if (response.statusCode == 200) {
         setState(() {
           drivers = json.decode(response.body);
@@ -334,108 +336,6 @@ class _DriversScreenState extends State<DriversScreen> {
     );
   }
 
-  void _showCreateDriverDialog() {
-    final formKey = GlobalKey<FormState>();
-    String name = '';
-    String licenseId = '';
-    String phone = '';
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Crear Nuevo Conductor'),
-          content: SingleChildScrollView(
-            child: Form(
-              key: formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  TextFormField(
-                    key: const Key('input_driver_name'),
-                    decoration: const InputDecoration(labelText: 'Nombre Completo'),
-                    validator: (value) => value == null || value.isEmpty ? 'Ingrese el nombre completo' : null,
-                    onSaved: (value) => name = value!,
-                  ),
-                  TextFormField(
-                    key: const Key('input_driver_license_id'),
-                    decoration: const InputDecoration(labelText: 'ID de Licencia'),
-                    validator: (value) => value == null || value.isEmpty ? 'Ingrese el ID de licencia' : null,
-                    onSaved: (value) => licenseId = value!,
-                  ),
-                  TextFormField(
-                    key: const Key('input_driver_phone'),
-                    decoration: const InputDecoration(labelText: 'Teléfono'),
-                    keyboardType: TextInputType.phone,
-                    validator: (value) => value == null || value.isEmpty ? 'Ingrese el teléfono' : null,
-                    onSaved: (value) => phone = value!,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              key: const Key('guardar_driver_button'),
-              child: const Text('Guardar'),
-              onPressed: () async {
-                if (formKey.currentState!.validate()) {
-                  formKey.currentState!.save();
-
-                  final driverData = {
-                    'name': name,
-                    'license_id': licenseId,
-                    'phone': phone,
-                  };
-
-                  try {
-                    final response = widget.client != null
-                        ? await widget.client!.post(
-                            Uri.parse('http://localhost:8001/drivers/'), // Ensure trailing slash if API expects it
-                            headers: {'Content-Type': 'application/json; charset=utf-8'},
-                            body: json.encode(driverData),
-                          )
-                        : await http.post(
-                            Uri.parse('http://localhost:8001/drivers/'), // Ensure trailing slash
-                            headers: {'Content-Type': 'application/json; charset=utf-8'},
-                            body: json.encode(driverData),
-                          );
-
-                    if (!mounted) return;
-                    Navigator.of(context).pop();
-
-                    if (response.statusCode == 201) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Conductor creado correctamente')),
-                      );
-                      fetchDrivers(); // Refresh the list
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error al crear conductor: ${response.body}')),
-                      );
-                    }
-                  } catch (e) {
-                    if (!mounted) return;
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error de conexión: $e')),
-                    );
-                  }
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final filteredDrivers = _getFilteredDrivers();
@@ -621,7 +521,9 @@ class _DriversScreenState extends State<DriversScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showCreateDriverDialog,
+        onPressed: () {
+          // Implementar creación de nuevo conductor
+        },
         backgroundColor: Colors.blueGrey[700],
         tooltip: 'Nuevo conductor',
         child: const Icon(Icons.add),
@@ -629,4 +531,3 @@ class _DriversScreenState extends State<DriversScreen> {
     );
   }
 }
-
