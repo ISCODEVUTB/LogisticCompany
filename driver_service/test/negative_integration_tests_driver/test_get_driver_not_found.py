@@ -1,9 +1,7 @@
 import pytest
 from httpx import AsyncClient
 from httpx._transports.asgi import ASGITransport
-
 from driver_service.app.main import app
-
 
 @pytest.mark.asyncio
 async def test_get_driver_by_invalid_id():
@@ -11,6 +9,7 @@ async def test_get_driver_by_invalid_id():
     async with AsyncClient(transport=transport, base_url="https://test") as client:
         driver_id = "nonexistent-id-123"
 
-        response = await client.get(f"/api/drivers/{driver_id}")
+        response = await client.get(f"/drivers/{driver_id}")
         assert response.status_code == 404
         assert response.json()["detail"] == "Driver not found"
+
