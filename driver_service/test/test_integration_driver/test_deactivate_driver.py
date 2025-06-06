@@ -14,11 +14,11 @@ async def test_deactivate_driver_success():
             "phone": "3129988776"
             # "email" field removed
         }
-        response_create = await client.post("/drivers/", json=payload)
+        response_create = await client.post("/api/drivers/", json=payload)
         assert response_create.status_code == 201 # Ensure we check for successful creation
         driver_id = response_create.json()["driver_id"] # Assuming 'id' is the key for the driver's ID
 
         # Desactivar conductor
-        response_delete = await client.delete(f"/drivers/{driver_id}")
+        response_delete = await client.delete(f"/api/drivers/{driver_id}")
         assert response_delete.status_code == 200
         assert response_delete.json()["message"] == "Driver deactivated"

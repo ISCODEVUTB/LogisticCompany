@@ -1,6 +1,6 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
-from app.main import app
+from routing_service.app.main import app
 from unittest.mock import patch, AsyncMock
 
 @pytest.mark.asyncio
@@ -19,10 +19,10 @@ async def test_create_route_success():
         return True
     
     # Aplicar todos los mocks necesarios
-    with patch("app.api.routes.validate_driver", side_effect=mock_validate_driver) as mock_validate_driver, \
-         patch("app.api.routes.validate_orders", side_effect=mock_validate_orders) as mock_validate_orders, \
-         patch("app.api.routes.notify_driver_assignment", side_effect=mock_notify_driver_assignment) as mock_notify_driver, \
-         patch("app.api.routes.update_order_statuses", side_effect=mock_update_order_statuses) as mock_update_orders:
+    with patch("routing_service.app.api.routes.validate_driver", side_effect=mock_validate_driver) as mock_validate_driver, \
+         patch("routing_service.app.api.routes.validate_orders", side_effect=mock_validate_orders) as mock_validate_orders, \
+         patch("routing_service.app.api.routes.notify_driver_assignment", side_effect=mock_notify_driver_assignment) as mock_notify_driver, \
+         patch("routing_service.app.api.routes.update_order_statuses", side_effect=mock_update_order_statuses) as mock_update_orders:
         
         # Crear el cliente después de los mocks
         async with AsyncClient(transport=ASGITransport(app=app), base_url="https://test") as client:
@@ -36,7 +36,7 @@ async def test_create_route_success():
             }
             
             # Realizar la solicitud dentro del contexto del cliente
-            response = await client.post("/routes/", json=payload)
+            response = await client.post("/api/routes/", json=payload)
             
             # Realizar las aserciones dentro del mismo contexto
             assert response.status_code == 200
