@@ -14,7 +14,6 @@ import 'backend_integration_test.mocks.dart'; // MockClient
 // For this example, I'll copy them here if they are not automatically available via an import.
 // If they ARE in screen_navigation_test.dart, this import is fine.
 import 'screen_navigation_test.dart';
-import 'mock_utils.dart';
 
 void main() {
   late MockClient mockClient;
@@ -24,7 +23,6 @@ void main() {
   });
 
   testWidgets('Asignación de conductor a ruta', (WidgetTester tester) async {
-    setupCommonMocks(mockClient);
     const routeIdToAssign = "RUT-001";
     const routeNameToFind = "Ruta #$routeIdToAssign"; // Used in find.text()
     const driverToSelectId = "DRV-JP";
@@ -101,14 +99,8 @@ void main() {
       await tester.pumpAndSettle(); // Details dialog opens
 
       debugPrint('Test: Tapping "Asignar Conductor" button...');
-      final asignarButtonFinder = find.ancestor(
-        of: find.text('Asignar Conductor'),
-        matching: find.bySubtype<ButtonStyleButton>(),
-      );
-      expect(asignarButtonFinder, findsOneWidget);
-      await tester.ensureVisible(asignarButtonFinder);
-      await tester.pumpAndSettle();
-      await tester.tap(asignarButtonFinder);
+      expect(find.widgetWithText(ElevatedButton, 'Asignar Conductor'), findsOneWidget);
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Asignar Conductor'));
       await tester.pumpAndSettle(); // Driver selection dialog opens, drivers are fetched
 
       debugPrint('Test: Verifying driver selection dialog and selecting driver: $driverToSelectName');
