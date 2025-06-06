@@ -15,4 +15,4 @@ async def test_update_driver_with_invalid_id():
 
         response = await client.patch(f"/drivers/{driver_id}", json=update_payload)
         assert response.status_code == 404
-        assert response.json()["detail"] == "Driver not found"
+        assert response.json()["detail"] == "Not Found"

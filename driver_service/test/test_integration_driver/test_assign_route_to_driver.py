@@ -15,7 +15,7 @@ async def test_assign_route_success():
             "email": "laura@example.com"
         }
         response_create = await client.post("/drivers/", json=payload)
-        driver_id = response_create.json()["driver_id"]
+        driver_id = response_create.json()['driver_id']
 
         # Asignar ruta
         response_assign = await client.patch(f"/drivers/{driver_id}/assign-route?route_id=R123")
