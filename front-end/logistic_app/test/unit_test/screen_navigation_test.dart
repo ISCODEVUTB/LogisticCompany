@@ -2,17 +2,13 @@ import 'dart:async'; // For StreamTransformer, StreamSubscription
 import 'dart:io'; // For HttpOverrides, HttpClient, HttpClientRequest, HttpClientResponse, HttpHeaders, HttpStatus, HttpConnectionInfo, Cookie
 import 'dart:typed_data'; // For Uint8List
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:logistic_company_web/main.dart'; // Assuming InfoCard is here or imported
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
 
 // Import the generated mocks
 import 'backend_integration_test.mocks.dart';
-import 'mock_utils.dart'; // Restored setupCommonMocks
-
-// Minimal MockHttpHeaders and related classes for image mocking might still be needed if HttpOverrides is removed
-// and images are fetched. For now, focusing on API mocks.
-// If image errors occur, these classes might need to be reinstated or a more robust image mocking solution used.
 
 // A transparent 1x1 pixel PNG image
 final Uint8List kTransparentImage = Uint8List.fromList([
@@ -81,34 +77,38 @@ class MockHttpClient extends Mock implements HttpClient {
 void main() {
   testWidgets('Full screen navigation and mocked data display', (WidgetTester tester) async {
     final mockClient = MockClient();
-    setupCommonMocks(mockClient); // Use common mocks
 
-    debugPrint('Test: Setting up test-specific mocks for screen_navigation_test (dashboard mock removed)...');
+    debugPrint('Test: Setting up mocks...');
+    when(mockClient.get(Uri.parse('http://localhost:8000/api/dashboard')))
+        .thenAnswer((_) async {
+          debugPrint('Test: Dashboard mock was called!');
+          return http.Response(
+              '{"pedidos": {"total": 5, "enTransito": 2}, "conductores": {"disponibles": 1, "asignados": 0}, "rutas": {"activas": 0}, "tracking": {"eventos": 0}}',
+              200,
+              headers: {'content-type': 'application/json; charset=utf-8'});
+        });
     
-    // Local /api/dashboard mock is removed. setupCommonMocks will provide the default.
-    // Local /api/dashboard_disabled mock is also removed. setupCommonMocks provides default.
-
-    when(mockClient.get(Uri.parse('http://localhost:8000/api/orders'))) // Removed headers: anyNamed('headers')
-        .thenAnswer((realInvocation) async {
-          debugPrint('Test: Orders mock was called for screen_navigation_test!');
+    when(mockClient.get(Uri.parse('http://localhost:8000/api/orders')))
+        .thenAnswer((_) async {
+          debugPrint('Test: Orders mock was called!');
           return http.Response(
             '[{"id": "ORD-MOCK-001", "customer": "Cliente Mock Pedido", "destination": "Destino Mock", "status": "En tránsito", "date": "2025-07-01", "items": 1, "total": 100, "driver": "Conductor Mock", "estimatedDelivery": "2025-07-02"}]',
             200,
             headers: {'content-type': 'application/json; charset=utf-8'});
         });
 
-    when(mockClient.get(Uri.parse('http://localhost:8000/api/drivers'))) // Removed headers: anyNamed('headers')
-        .thenAnswer((realInvocation) async {
-          debugPrint('Test: Drivers mock was called for screen_navigation_test!');
+    when(mockClient.get(Uri.parse('http://localhost:8000/api/drivers')))
+        .thenAnswer((_) async {
+          debugPrint('Test: Drivers mock was called!');
           return http.Response(
             '[{"id":"DRV001","name":"Conductor Test Uno","vehicle":"Moto Veloz","license_id":"XYZ123","status":"Disponible","photo":"https://randomuser.me/api/portraits/men/1.jpg"}]',
             200,
             headers: {'content-type': 'application/json; charset=utf-8'});
         });
     
-    when(mockClient.get(Uri.parse('http://localhost:8000/api/routes'))) // Removed headers: anyNamed('headers')
-        .thenAnswer((realInvocation) async {
-          debugPrint('Test: Routes mock was called for screen_navigation_test!');
+    when(mockClient.get(Uri.parse('http://localhost:8000/api/routes')))
+        .thenAnswer((_) async {
+          debugPrint('Test: Routes mock was called!');
           return http.Response(
             '''
             [
@@ -139,33 +139,31 @@ void main() {
             headers: {'content-type': 'application/json; charset=utf-8'});
         });
     
-    when(mockClient.get(argThat(predicate<Uri>((uri) => uri.toString().contains('/api/tracking/'))))) // Removed headers: anyNamed('headers')
-        .thenAnswer((realInvocation) async {
-          final Uri calledUri = realInvocation.positionalArguments.first as Uri;
-          final orderId = calledUri.pathSegments.last;
-          debugPrint('Test: Tracking mock (specific ID) was called for $orderId in screen_navigation_test');
+    when(mockClient.get(argThat(predicate<Uri>((uri) => uri.toString().contains('/api/tracking/')))))
+        .thenAnswer((invocation) async {
+          final orderId = invocation.positionalArguments.first.pathSegments.last;
+          debugPrint('Test: Tracking mock (specific ID) was called for $orderId');
           return http.Response(
               '{"orderId":"$orderId","status":"En Transito Mock","estimatedDelivery":"2023-12-25","events":[{"timestamp":"2023-12-24T10:00:00Z","location":"Almacen Central Mock","status":"Pedido Recibido Mock"}]}',
               200,
               headers: {'content-type': 'application/json; charset=utf-8'});
         });
 
-    // HttpOverrides.runZoned removed for now to ensure API mocks are primary focus
-    // Re-adding HttpOverrides for image mocking, as it was causing issues in other files.
+
     await HttpOverrides.runZoned(() async {
       await tester.pumpWidget(LogisticDashboardApp(client: mockClient));
 
-      await tester.pump(); // Initial pump
-      await tester.pump(); // Pump again
-      await tester.pumpAndSettle(); // Settle network calls and UI
+      await tester.pump();
+      await tester.pump();
+      await tester.pumpAndSettle();
 
       debugPrint('Test: Dashboard - Pumping complete. Checking assertions.');
       expect(find.text('Panel de Gestión Logística'), findsOneWidget);
       expect(find.text("Pedidos Activos"), findsOneWidget);
       final Finder pedidosActivosCardFinder = find.widgetWithText(InfoCard, "Pedidos Activos");
       expect(pedidosActivosCardFinder, findsOneWidget);
-      expect(find.descendant(of: pedidosActivosCardFinder, matching: find.textContaining("Total: 10", findRichText: true)), findsOneWidget);
-      expect(find.descendant(of: pedidosActivosCardFinder, matching: find.textContaining("En tránsito: 5", findRichText: true)), findsOneWidget);
+      expect(find.descendant(of: pedidosActivosCardFinder, matching: find.textContaining("Total: 5", findRichText: true)), findsOneWidget);
+      expect(find.descendant(of: pedidosActivosCardFinder, matching: find.textContaining("En tránsito: 2", findRichText: true)), findsOneWidget);
 
       debugPrint('Test: Navigating to OrdersScreen...');
       await tester.tap(find.text('Pedidos'));
@@ -177,6 +175,7 @@ void main() {
       await tester.tap(find.text('Conductores'));
       await tester.pumpAndSettle();
       expect(find.text('Gestión de Conductores'), findsOneWidget);
+      // Commenting out driver data assertions if RenderFlex is an issue, to test full navigation first
       // expect(find.text('Conductor Test Uno'), findsOneWidget, reason: "Mocked driver name not found.");
       // expect(find.textContaining('Vehículo: Moto Veloz', findRichText: true), findsOneWidget, reason: "Mocked driver vehicle not found.");
 
@@ -184,14 +183,16 @@ void main() {
       await tester.tap(find.text('Rutas'));
       await tester.pumpAndSettle();
       expect(find.text('Gestión de Rutas'), findsOneWidget);
+      // RoutesScreen displays route 'name' in the ListTile title.
       expect(find.text('Ruta Mañanera'), findsOneWidget, reason: "Mocked route name not found.");
 
       debugPrint('Test: Navigating to TrackingScreen...');
       await tester.tap(find.text('Tracking'));
       await tester.pumpAndSettle();
       expect(find.text('Seguimiento de Pedido'), findsOneWidget);
+      // Initial state of TrackingScreen when no ID is searched
       expect(find.text('Ingrese un número de pedido para rastrear'), findsOneWidget);
 
-    }, createHttpClient: (_) => MockHttpClient()); // Restored HttpOverrides with MockHttpClient
+    }, createHttpClient: (_) => MockHttpClient());
   });
 }
