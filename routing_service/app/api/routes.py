@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
-from routing_service.app.schemas.routing_schema import RouteCreate, RouteOut
-from routing_service.app.services.routing_service import RouteService
-from routing_service.app.core.validators import (
+from app.schemas.routing_schema import RouteCreate, RouteOut
+from app.services.routing_service import RouteService
+from app.core.validators import (
     validate_driver,
     validate_orders,
     notify_driver_assignment,
