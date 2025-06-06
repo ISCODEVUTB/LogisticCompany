@@ -1,6 +1,6 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
-from routing_service.app.main import app
+from app.main import app
 
 @pytest.mark.asyncio
 async def test_create_route_with_invalid_orders():
@@ -15,8 +15,9 @@ async def test_create_route_with_invalid_orders():
             "order_ids": ["invalid-order-123", "nonexistent-order-456"]
         }
 
-        response = await client.post("/api/routes/", json=payload)
+        response = await client.post("/routes/", json=payload)
 
         assert response.status_code == 400
         assert response.json()["detail"] == "One or more orders not found"
+
 
