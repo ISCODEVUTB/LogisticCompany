@@ -1,8 +1,8 @@
 import httpx
 import os
 
-DRIVER_SERVICE_URL = os.getenv("DRIVER_SERVICE_URL", "http://localhost:8001/api/drivers")
-ORDER_SERVICE_URL = os.getenv("ORDER_SERVICE_URL", "http://localhost:8002/api/orders")
+DRIVER_SERVICE_URL = os.getenv("DRIVER_SERVICE_URL", "http://localhost:8001/drivers")
+ORDER_SERVICE_URL = os.getenv("ORDER_SERVICE_URL", "http://localhost:8002/orders")
 
 async def validate_driver(driver_id: str) -> bool:
     try:
